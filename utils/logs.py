@@ -4,13 +4,12 @@ import discord
 import requests
 
 from config import LOGO
+from config import LOGS
 from config import PASTE_API
-
-log_channel = 843977449335291904
 
 
 async def log(client, title, description):
-    c = await client.fetch_channel(log_channel)
+    c = await client.fetch_channel(int(LOGS))
     emb = discord.Embed(
         title=title,
         colour=int("19C7FC", 16),
