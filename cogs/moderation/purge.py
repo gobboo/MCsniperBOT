@@ -14,15 +14,15 @@ class Purge(commands.Cog):
         aliases=["delete", "clear"], usage="!purge 5 | !purge @jordan#1284 5"
     )
     async def purge(
-        self, ctx, next_arg: typing.Union[discord.Member, int] = None, amount=None
+        self, ctx, user_or_amount: typing.Union[discord.Member, int] = None, amount=None
     ):
-        if next_arg is None:
+        if user_or_amount is None:
             return await generate_error(
                 ctx=ctx,
                 error="You must specify either an amount of messages to delete or a valid user!",
                 example=self.purge.usage,
             )
-        author = next_arg if type(next_arg) == discord.Member else None
+        author = user_or_amount if type(user_or_amount) == discord.Member else None
         if amount is not None:
             try:
                 amount = int(amount)
@@ -33,7 +33,7 @@ class Purge(commands.Cog):
                     example=self.purge.usage,
                 )
         else:
-            amount = next_arg if type(next_arg) == int else 50
+            amount = user_or_amount if type(user_or_amount) == int else 50
         messages = []
         message_history = await ctx.channel.history(limit=999).flatten()
         for message in message_history:
