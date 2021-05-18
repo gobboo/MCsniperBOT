@@ -10,5 +10,5 @@ async def generate_error(ctx, error, example=None):
     if example is not None:
         error_embed.set_footer(text=example, icon_url=LOGO)
     else:
-        error_embed.set_footer(text="『MCsniperBOT』", icon_url=LOGO)
+        error_embed.set_footer(text="​", icon_url=LOGO)
     return await ctx.send(embed=error_embed)
