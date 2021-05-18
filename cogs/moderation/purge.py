@@ -1,8 +1,11 @@
 import typing
+from datetime import datetime
 
 import discord
 from discord.ext import commands
 
+from utils.logs import log
+from utils.logs import paste
 from utils.responses import generate_error
 
 
@@ -42,6 +45,36 @@ class Purge(commands.Cog):
             if author == message.author or author is None:
                 messages.append(message)
         await ctx.channel.delete_messages(messages)
+
+        text_to_paste = ""
+        messages.reverse()
+        for message in messages:
+            timestamp = message.created_at.strftime("%H:%M")
+            message_content = message.content
+            if len(message.attachments) > 0:
+                for attachment in message.attachments:
+                    message_content += f"\n{attachment.url}"
+            if message_content == "":
+                message_content = "MESSAGE WAS AN EMBED"
+            text_to_paste += f"[{timestamp}] {message.author.name} ({message.author.id}): {message_content}\n"
+        paste_url = await paste(
+            name=f"{datetime.now().strftime('%d|%m - %H:%M')} Purged Messages",
+            description=f"{len(messages)} messages deleted from #{ctx.channel.name} by {ctx.message.author}",
+            to_paste=text_to_paste,
+        )
+
+        description = (
+            f"{ctx.author} has purged `{len(messages)}` messages in #{ctx.channel}"
+        )
+
+        if paste_url is not None:
+            description += f"\n\n[Purge Log]({paste_url})"
+
+        await log(
+            client=self.client,
+            title="Moderator Command Executed!",
+            description=description,
+        )
 
     @purge.error
     async def purge_error(self, ctx, error):
