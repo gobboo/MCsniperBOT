@@ -18,8 +18,8 @@ This cog sub-directory will be used for discord events such as "on_member_join" 
 ## Utils
 The utils directory is used to save time when rewriting the same code repeatedly. It currently has:
 
-### logs.py
+#### logs.py
 For logging actions to either paste.gg or the logs channel specified on config.py
 
-### responses.py
+#### responses.py
 For responding to a command with either a success or error without recreating the same embed design repeatedly
