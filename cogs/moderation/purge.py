@@ -44,27 +44,42 @@ class Purge(commands.Cog):
                 break
             if author == message.author or author is None:
                 messages.append(message)
-        await ctx.channel.delete_messages(messages)
+
+        messages.reverse()
+
+        failed_to_purge = False
+
+        try:
+            await ctx.channel.delete_messages(messages)
+        except Exception as e:
+            if isinstance(e, discord.errors.HTTPException):
+                failed_to_purge = True
+                await generate_error(
+                    ctx=ctx,
+                    error=str(e),
+                )
 
         text_to_paste = ""
-        messages.reverse()
-        for message in messages:
-            timestamp = message.created_at.strftime("%H:%M")
-            message_content = message.content
-            if len(message.attachments) > 0:
-                for attachment in message.attachments:
-                    message_content += f"\n{attachment.url}"
-            if message_content == "":
-                message_content = "MESSAGE WAS AN EMBED"
-            text_to_paste += f"[{timestamp}] {message.author.name} ({message.author.id}): {message_content}\n"
-        paste_url = await paste(
-            name=f"{datetime.now().strftime('%d|%m - %H:%M')} Purged Messages",
-            description=f"{len(messages)} messages deleted from #{ctx.channel.name} by {ctx.message.author}",
-            to_paste=text_to_paste,
-        )
+        try:
+            for message in messages:
+                timestamp = message.created_at.strftime("%H:%M")
+                message_content = message.content
+                if len(message.attachments) > 0:
+                    for attachment in message.attachments:
+                        message_content += f"\n{attachment.url}"
+                if message_content == "":
+                    message_content = "MESSAGE WAS AN EMBED"
+                text_to_paste += f"[{timestamp}] {message.author.name} ({message.author.id}): {message_content}\n"
+            paste_url = await paste(
+                name=f"{datetime.now().strftime('%d|%m - %H:%M')} Purged Messages",
+                description=f"{len(messages)} messages deleted from #{ctx.channel.name} by {ctx.message.author}",
+                to_paste=text_to_paste,
+            )
+        except Exception as e:
+            print(e)
 
         description = (
-            f"{ctx.author} has purged `{len(messages)}` messages in #{ctx.channel}"
+            f"{ctx.author} has {'attempted to purge' if failed_to_purge else 'purged'} `{len(messages)}` messages in #{ctx.channel}"
         )
 
         if paste_url is not None:
