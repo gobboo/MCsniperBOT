@@ -51,7 +51,33 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        print(message.content)
+        if message.author.bot:
+            return
+        message_content = message.content
+        message_content += "\n" if message_content != "" else ""
+        if len(message.attachments) > 0:
+            for attachment in message.attachments:
+                message_content += f"{attachment.url}\n"
+        await log(
+            client=self.client,
+            title="Message Deleted!",
+            description=f"Message by {message.author} deleted from <#{message.channel.id}>\n\n"
+            f"**Content**:\n"
+            f"{message_content}",
+        )
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if before.content != after.content and not before.author.bot:
+            await log(
+                client=self.client,
+                title="Message Deleted!",
+                description=f"Message by {before.author} edited in <#{before.channel.id}>\n\n"
+                f"**Before**:\n"
+                f"{before.content}\n\n"
+                f"**After**:\n"
+                f"{after.content}",
+            )
 
 
 def setup(client):
