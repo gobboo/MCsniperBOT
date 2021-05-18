@@ -1,6 +1,6 @@
 import discord
 
-logo = "https://cdn.discordapp.com/attachments/819654216548483083/844153348470734858/logo.png"
+from config import LOGO
 
 
 async def generate_error(ctx, error, example=None):
@@ -8,6 +8,7 @@ async def generate_error(ctx, error, example=None):
         title="Error!", colour=int("FF0000", 16), description=error
     )
     if example is not None:
-        error_embed.set_footer(text=example)
-    error_embed.set_thumbnail(url=logo)
+        error_embed.set_footer(text=example, icon_url=LOGO)
+    else:
+        error_embed.set_footer(text="『MCsniperBOT』", icon_url=LOGO)
     return await ctx.send(embed=error_embed)
