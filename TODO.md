@@ -23,3 +23,4 @@
     - 3char
 - music commands
 - automod
+- tags
