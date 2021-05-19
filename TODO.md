@@ -6,6 +6,7 @@
     - leaderboard
     - migrate levels from Mee6
     - Before this can happen, we need a database system.
+    - customisable level background
 - warns
     - need db first
 - mutes
@@ -14,3 +15,11 @@
     - Generate auth code
     - List snipes
     - Before this can happen, announce system has to be migrated to new database (postgresql or sqllite; I'm leaning towards postgresql)
+- snipe related commands
+    - next command
+    - delay
+    - snipes
+    - info
+    - 3char
+- music commands
+- automod
