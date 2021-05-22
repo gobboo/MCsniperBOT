@@ -24,3 +24,5 @@
 - music commands
 - automod
 - tags
+- change autorole
+    - instead of giving user role on join, if < 3 days old give user a captcha first
