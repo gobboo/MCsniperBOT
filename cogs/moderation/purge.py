@@ -60,6 +60,16 @@ class Purge(commands.Cog):
                     error=str(e),
                 )
 
+        text_to_paste = ""
+        for message in messages:
+            timestamp = message.created_at.strftime("%H:%M")
+            message_content = message.content
+            if len(message.attachments) > 0:
+                for attachment in message.attachments:
+                    message_content += f"\n{attachment.url}"
+            if message_content == "":
+                message_content = "MESSAGE WAS AN EMBED"
+            text_to_paste += f"[{timestamp}] {message.author.name} ({message.author.id}): {message_content}\n"
         text_to_paste = await create_paste_desc(messages)
         paste_url = await paste(
             name=f"{datetime.now().strftime('%d|%m - %H:%M')} Purged Messages",
