@@ -1,12 +1,13 @@
-import sys
-import logging
 import logging.handlers
 import os
-import discord
+import sys
 from datetime import datetime
-from discord.ext import commands
-import config
 
+import discord
+from discord.ext import commands
+
+import config
+from database.postgres_handler import setup_tables
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,7 +29,8 @@ class MCsniperBOT(commands.AutoShardedBot):
         )
 
     async def on_ready(self):
-        self.remove_command('help')
+        self.remove_command("help")
+        await setup_tables()
         await self.cog_loader()
 
     async def cog_loader(self, directory="./cogs"):
