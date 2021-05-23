@@ -7,6 +7,8 @@ from discord.ext import commands
 from database.users import get_xp
 from database.users import increment_messages
 from database.users import increment_xp
+from database.postgres_handler import query_sql
+
 from utils.functions import create_paste_desc
 from utils.functions import get_level_from_xp
 from utils.logs import log
@@ -27,6 +29,8 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        # Levels
+        # This seems to produce an error for me idk why
         cooldown = self.get_cooldown(message)
         level_up = False
         await increment_messages(message.author.id)
@@ -40,6 +44,37 @@ class Messages(commands.Cog):
             await increment_xp(message.author.id, xp_gained)
             if level_up:
                 print("Levelled up")
+
+        # Verify
+        # TODO: add to attempts every time
+        # TODO: allow users to retry
+        if isinstance(message.channel, discord.channel.DMChannel):
+            user_id_from_db, captcha, attempts = query_sql(f"SELECT user_id, captcha, attempts  FROM captcha_users WHERE user_id = {message.author.id}")
+            if user_id_from_db is not None:
+                if attempts < 5:
+                    if message.content.strip().lower() == captcha:
+                        await message.channel.send(
+                            embed=discord.Embed(
+                                title="Success!",
+                                description=f"{message.author.mention}, you are now verified!"
+                            )
+                        )
+                        # TODO: give them the role
+                        # Might need to include the server they're being verified in inside of the database
+                    else:
+                        await message.channel.send(
+                            embed=discord.Embed(
+                                title="Fail!",
+                                description=":x: Incorrect captcha answer!"
+                            )
+                        )
+                else:
+                    await message.channel.send(
+                        embed=discord.Embed(
+                            title="Too many attempts!",
+                            description="Please contact a moderator to be verified."
+                        )
+                    )
 
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):

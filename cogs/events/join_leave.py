@@ -8,6 +8,7 @@ import datetime
 import io
 
 from utils import captcha
+from database.postgres_handler import execute_sql, query_sql
 
 
 class Welcome(commands.Cog):
@@ -32,18 +33,30 @@ class Welcome(commands.Cog):
                 )
 
                 embed.set_image(url="attachment://captcha.png")
-                await member.dm_channel.send(embed=embed, file=discord.File(io.BytesIO(captcha_bytes.getvalue()), filename="captcha.png"))
+                await member.dm_channel.send(
+                    content=member.mention,
+                    embed=embed,
+                    file=discord.File(io.BytesIO(captcha_bytes.getvalue()), filename="captcha.png")
+                )
+                execute_sql(
+                    f"""INSERT INTO captcha_users (
+                        user_id,
+                        captcha,
+                        attempts
+                    ) VALUES ('{member.id}', '{text}', 1);"""
+                )
+                print(query_sql("SELECT * FROM captcha_users"))
 
-                def check(m):
-                    return m.channel == member.dm_channel and m.author == member
-                response = await self.client.wait_for("message", check=check)
-                print(response.content, text)
-                if response.content.lower().strip() == text:
-                    await member.dm_channel.send("successfully answered captcha!")
-                    await member.add_roles(get(member.guild.roles, name="member"))
-                else:
-                    print("failed captcha rippp")
-                    await member.dm_channel.send("failed captcha")
+                # def check(m):
+                #     return m.channel == member.dm_channel and m.author == member
+                # response = await self.client.wait_for("message", check=check)
+                # print(response.content, text)
+                # if response.content.lower().strip() == text:
+                #     await member.dm_channel.send("successfully answered captcha!")
+                #     await member.add_roles(get(member.guild.roles, name="member"))
+                # else:
+                #     print("failed captcha rippp")
+                #     await member.dm_channel.send("failed captcha")
             except Exception as e:
                 print(e)
                 # handle them not having dms enabled
