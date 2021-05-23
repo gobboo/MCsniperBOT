@@ -1,8 +1,14 @@
 from datetime import datetime
+from random import randint
 
+import discord
 from discord.ext import commands
 
+from database.users import get_xp
+from database.users import increment_messages
+from database.users import increment_xp
 from utils.functions import create_paste_desc
+from utils.functions import get_level_from_xp
 from utils.logs import log
 from utils.logs import paste
 
@@ -10,6 +16,30 @@ from utils.logs import paste
 class Messages(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self._cd = commands.CooldownMapping.from_cooldown(
+            1, 60, commands.BucketType.member
+        )
+
+    def get_cooldown(self, message: discord.Message):
+        """Returns the cooldown left"""
+        bucket = self._cd.get_bucket(message)
+        return bucket.update_rate_limit()
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        cooldown = self.get_cooldown(message)
+        level_up = False
+        await increment_messages(message.author.id)
+        if cooldown is None:
+            xp_gained = randint(15, 25)
+            xp = await get_xp(message.author.id)
+            current_level = await get_level_from_xp(xp)
+            new_level = await get_level_from_xp(xp + xp_gained)
+            if new_level > current_level:
+                level_up = True
+            await increment_xp(message.author.id, xp_gained)
+            if level_up:
+                print("Levelled up")
 
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):

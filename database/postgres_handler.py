@@ -9,7 +9,6 @@ from config import USER
 
 
 def create_connection():
-    conn = None
     try:
         conn = psycopg2.connect(
             f"dbname={DATABASE} user={USER} password={PASSWORD} host={HOST}"
@@ -63,6 +62,20 @@ async def setup_tables():
                 duration BIGINT NULL,
                 permanent BOOL DEFAULT FALSE,
                 expired BOOL DEFAULT FALSE
+            )
+        """,
+        """
+            CREATE TABLE IF NOT EXISTS users (
+                user_id BIGINT NOT NULL,
+                messages INT NOT NULL DEFAULT 0,
+                experience INT NOT NULL DEFAULT 0
+            )
+        """,
+        """
+            CREATE TABLE IF NOT EXISTS captcha_users (
+                user_id BIGINT NOT NULL,
+                captcha VARCHAR(5) NOT NULL,
+                attempts INT NOT NULL DEFAULT 0
             )
         """,
     )
