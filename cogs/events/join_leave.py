@@ -7,9 +7,11 @@ from discord import Forbidden
 from discord.ext import commands
 from discord.utils import get
 
-from database.postgres_handler import query_sql
+# from database.postgres_handler import query_sql
 from database.users import set_captcha
 from utils.functions import gen_captcha
+
+from config import MEMBER_ROLE
 
 
 class Welcome(commands.Cog):
@@ -18,8 +20,8 @@ class Welcome(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        if dt.utcnow() - member.created_at > datetime.timedelta(days=3):
-            await member.add_roles(get(member.guild.roles, name="Member"))
+        if dt.utcnow() - member.created_at < datetime.timedelta(days=3):
+            await member.add_roles(get(member.guild.roles, name=MEMBER_ROLE))
         else:
             # The account was brand new (under 3 days old)
             try:

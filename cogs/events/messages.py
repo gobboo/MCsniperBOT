@@ -16,6 +16,10 @@ from utils.functions import create_paste_desc
 from utils.functions import get_level_from_xp
 from utils.logs import log
 from utils.logs import paste
+from database.postgres_handler import execute_sql
+
+
+from config import MEMBER_ROLE
 
 
 class Messages(commands.Cog):
@@ -33,8 +37,6 @@ class Messages(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         # Levels
-        # This seems to produce an error for me idk why
-        # Give more info ^
         cooldown = self.get_cooldown(message)
         level_up = False
         await increment_messages(message.author.id)
@@ -53,10 +55,11 @@ class Messages(commands.Cog):
         # TODO: allow users to retry
         if isinstance(
             message.channel, discord.channel.DMChannel
-        ) and await require_captcha(message.author.id):
+        ) and await require_captcha(message.author.id) and message.author != self.client.user:
             user_id_from_db, captcha, attempts = await get_captcha_data(
                 message.author.id
             )
+            print(message.author.id)
             print(user_id_from_db, captcha, attempts)
             if user_id_from_db is not None:
                 if attempts < 5:
@@ -71,9 +74,17 @@ class Messages(commands.Cog):
                             int(LOGS_CHANNEL_ID)
                         )
                         # TODO: send logs for attempts / success
-                        await message.author.add_roles(
-                            get(logs_channel.guild.roles, name="Member")
+                        await get(
+                            logs_channel.guild.members, id=message.author.id
+                        ).add_roles(
+                            get(logs_channel.guild.roles, name=MEMBER_ROLE)
                         )
+                        await log(
+                            self.client,
+                            "Verified!",
+                            f"{message.author.mention} successfully verified with account age {datetime.utcnow() - message.author.created_at}"
+                        )
+                        execute_sql(f"DELETE FROM captcha_users WHERE user_id={message.author.id};")
                     else:
                         await message.channel.send(
                             embed=discord.Embed(
@@ -82,6 +93,7 @@ class Messages(commands.Cog):
                             )
                         )
                         await increment_attempts(message.author.id)
+                        await log(self.client, "Failed verification", f"{message.author.mention} failed authentication\n`Tries`: {attempts}")
                 else:
                     await message.channel.send(
                         embed=discord.Embed(
@@ -160,4 +172,7 @@ class Messages(commands.Cog):
 
 
 def setup(client):
+    client.add_cog(Messages(client))
+    client.add_cog(Messages(client))
+    client.add_cog(Messages(client))
     client.add_cog(Messages(client))
