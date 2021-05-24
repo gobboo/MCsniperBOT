@@ -36,6 +36,10 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+
+        if message.author == self.client.user:
+            return
+
         # Levels
         cooldown = self.get_cooldown(message)
         level_up = False
@@ -55,7 +59,7 @@ class Messages(commands.Cog):
         # TODO: allow users to retry
         if isinstance(
             message.channel, discord.channel.DMChannel
-        ) and await require_captcha(message.author.id) and message.author != self.client.user:
+        ) and await require_captcha(message.author.id):
             user_id_from_db, captcha, attempts = await get_captcha_data(
                 message.author.id
             )
