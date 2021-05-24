@@ -23,7 +23,7 @@ async def generate_error(ctx, error, example=None):
 async def generate_success(ctx, success_message):
     success_embed = discord.Embed(
         title="Success!",
-        colour=0x000000,
+        colour=0x000000,  # TODO: Change this to green
         description=success_message,
         timestamp=datetime.utcnow(),
     )
