@@ -8,21 +8,22 @@
     - Before this can happen, we need a database system.
     - customisable level background
 - warns
-    - need db first
 - mutes
-    - again, need db first.
 - custom announce stuff
-    - Generate auth code
+    - Generate auth code (maybe generate it when they are added to the database, and show it to them through a command)
     - List snipes
-    - Before this can happen, announce system has to be migrated to new database (postgresql or sqllite; I'm leaning towards postgresql)
+    - Before this can happen, announce system has to be migrated to new database
+    	- Create a script to migrate 
 - snipe related commands
-    - next command
-    - delay
+    - next command (includes namemc searches and / or length of name)
     - snipes
-    - info
-    - 3char
+    	- show past snipes for a user
+    - account info
 - music commands
 - automod
+    - regex for nono words and stuff
+    - find a large wordlist of words that should be blacklisted and add those too
 - tags
+    - delay
 - change autorole
     - instead of giving user role on join, if < 3 days old give user a captcha first
