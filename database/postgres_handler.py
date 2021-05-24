@@ -68,7 +68,9 @@ async def setup_tables():
             CREATE TABLE IF NOT EXISTS users (
                 user_id BIGINT NOT NULL,
                 messages INT NOT NULL DEFAULT 0,
-                experience INT NOT NULL DEFAULT 0
+                experience INT NOT NULL DEFAULT 0,
+                past_snipes VARCHAR(16)[],
+                snipes_auth_code VARCHAR(64)
             )
         """,
         """
