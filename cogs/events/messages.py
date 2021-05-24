@@ -3,12 +3,15 @@ from random import randint
 
 import discord
 from discord.ext import commands
+from discord.utils import get
 
+from config import LOGS_CHANNEL_ID
+from database.users import get_captcha_data
 from database.users import get_xp
+from database.users import increment_attempts
 from database.users import increment_messages
 from database.users import increment_xp
-from database.postgres_handler import query_sql
-
+from database.users import require_captcha
 from utils.functions import create_paste_desc
 from utils.functions import get_level_from_xp
 from utils.logs import log
@@ -31,6 +34,7 @@ class Messages(commands.Cog):
     async def on_message(self, message):
         # Levels
         # This seems to produce an error for me idk why
+        # Give more info ^
         cooldown = self.get_cooldown(message)
         level_up = False
         await increment_messages(message.author.id)
@@ -46,33 +50,43 @@ class Messages(commands.Cog):
                 print("Levelled up")
 
         # Verify
-        # TODO: add to attempts every time
         # TODO: allow users to retry
-        if isinstance(message.channel, discord.channel.DMChannel):
-            user_id_from_db, captcha, attempts = query_sql(f"SELECT user_id, captcha, attempts  FROM captcha_users WHERE user_id = {message.author.id}")
+        if isinstance(
+            message.channel, discord.channel.DMChannel
+        ) and await require_captcha(message.author.id):
+            user_id_from_db, captcha, attempts = await get_captcha_data(
+                message.author.id
+            )
+            print(user_id_from_db, captcha, attempts)
             if user_id_from_db is not None:
                 if attempts < 5:
                     if message.content.strip().lower() == captcha:
                         await message.channel.send(
                             embed=discord.Embed(
                                 title="Success!",
-                                description=f"{message.author.mention}, you are now verified!"
+                                description=f"{message.author.mention}, you are now verified!",
                             )
                         )
-                        # TODO: give them the role
-                        # Might need to include the server they're being verified in inside of the database
+                        logs_channel = await self.client.fetch_channel(
+                            int(LOGS_CHANNEL_ID)
+                        )
+                        # TODO: send logs for attempts / success
+                        await message.author.add_roles(
+                            get(logs_channel.guild.roles, name="Member")
+                        )
                     else:
                         await message.channel.send(
                             embed=discord.Embed(
                                 title="Fail!",
-                                description=":x: Incorrect captcha answer!"
+                                description=":x: Incorrect captcha answer!",
                             )
                         )
+                        await increment_attempts(message.author.id)
                 else:
                     await message.channel.send(
                         embed=discord.Embed(
                             title="Too many attempts!",
-                            description="Please contact a moderator to be verified."
+                            description="Please contact a moderator to be verified.",
                         )
                     )
 
