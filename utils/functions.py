@@ -1,3 +1,9 @@
+import io
+import random
+
+from claptcha import Claptcha
+
+
 async def create_paste_desc(messages):
     text_to_paste = ""
     messages.reverse()
@@ -13,14 +19,31 @@ async def create_paste_desc(messages):
     return text_to_paste
 
 
-def get_level_xp(level):
+async def get_level_xp(level):
     return 5 * (level ** 2) + (50 * level) + 100
 
 
 async def get_level_from_xp(xp) -> int:
     remaining_xp = int(xp)
     level = 0
-    while remaining_xp >= get_level_xp(level):
-        remaining_xp -= get_level_xp(level)
+    while remaining_xp >= await get_level_xp(level):
+        remaining_xp -= await get_level_xp(level)
         level += 1
     return level
+
+
+def random_chars(n):
+    return "".join(
+        random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(n)
+    )
+
+
+def gen_captcha():
+    c = Claptcha(random_chars(5), "./data/DroidSansMono.ttf")
+
+    text, im = c.image
+
+    byte_array = io.BytesIO()
+    im.save(byte_array, format="png")
+
+    return text, byte_array
