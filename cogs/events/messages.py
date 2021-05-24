@@ -6,20 +6,18 @@ from discord.ext import commands
 from discord.utils import get
 
 from config import LOGS_CHANNEL_ID
+from config import MEMBER_ROLE
+from database.users import captcha_completed
 from database.users import get_captcha_data
 from database.users import get_xp
-from database.users import increment_attempts
-from database.users import increment_messages
+from database.users import increment_column
 from database.users import increment_xp
 from database.users import require_captcha
 from utils.functions import create_paste_desc
 from utils.functions import get_level_from_xp
 from utils.logs import log
 from utils.logs import paste
-from database.postgres_handler import execute_sql
-
-
-from config import MEMBER_ROLE
+from utils.responses import generate_success
 
 
 class Messages(commands.Cog):
@@ -34,77 +32,109 @@ class Messages(commands.Cog):
         bucket = self._cd.get_bucket(message)
         return bucket.update_rate_limit()
 
+    async def captcha_check(self, message):
+        user_id_from_db, captcha, attempts = await get_captcha_data(message.author.id)
+        logs_channel = await self.client.fetch_channel(int(LOGS_CHANNEL_ID))
+        member = logs_channel.guild.get_member(message.author.id)
+        if user_id_from_db is not None:
+            if attempts < 5:
+                if (
+                    message.content.strip().lower() == captcha
+                ):  # If user answer matches captcha
+
+                    await generate_success(
+                        message.channel,
+                        f"{message.author.mention}, you are now verified!",
+                    )
+                    await member.add_roles(
+                        get(logs_channel.guild.roles, name=MEMBER_ROLE)
+                    )
+                    await log(
+                        self.client,
+                        "Verified!",
+                        f"{message.author.mention} successfully verified with account age "
+                        f"{datetime.utcnow() - message.author.created_at}",
+                    )
+                    await captcha_completed(message.author.id)
+
+                else:
+                    await message.channel.send(
+                        embed=discord.Embed(
+                            title="Fail!",
+                            description=":x: Incorrect captcha answer!",
+                            colour=int("fb607f", 16),
+                        )
+                    )
+                    await increment_column(
+                        table="captcha_users",
+                        column="attempts",
+                        amount=1,
+                        where_column="user_id",
+                        where_value=message.author.id,
+                    )
+                    await log(
+                        self.client,
+                        "Captcha Fail",
+                        f"{message.author.mention} failed authentication\n"
+                        f"`Attempts`: {attempts}",
+                    )
+            else:
+                await message.channel.send(
+                    embed=discord.Embed(
+                        title="Too many attempts!",
+                        description="Please contact a moderator to be verified.",
+                        colour=int("19C7FC", 16),
+                    )
+                )
+
+    async def grant_xp(self, message):
+        level_up = False
+        xp_gained = randint(15, 25)
+        xp = await get_xp(message.author.id)
+        current_level = await get_level_from_xp(xp)
+        new_level = await get_level_from_xp(xp + xp_gained)
+        if new_level > current_level:
+            level_up = True
+
+        await increment_xp(message.author.id, xp_gained)
+        await increment_column(
+            table="users",
+            column="experience",
+            amount=xp_gained,
+            where_column="user_id",
+            where_value=message.author.id,
+        )
+        await increment_column(
+            table="users",
+            column="messages",
+            amount=1,
+            where_column="user_id",
+            where_value=message.author.id,
+        )
+        if level_up:
+            print("Levelled up")
+
     @commands.Cog.listener()
     async def on_message(self, message):
 
         if message.author == self.client.user:
             return
 
-        # Levels
-        cooldown = self.get_cooldown(message)
-        level_up = False
-        await increment_messages(message.author.id)
-        if cooldown is None:
-            xp_gained = randint(15, 25)
-            xp = await get_xp(message.author.id)
-            current_level = await get_level_from_xp(xp)
-            new_level = await get_level_from_xp(xp + xp_gained)
-            if new_level > current_level:
-                level_up = True
-            await increment_xp(message.author.id, xp_gained)
-            if level_up:
-                print("Levelled up")
-
-        # Verify
-        # TODO: allow users to retry
         if isinstance(
             message.channel, discord.channel.DMChannel
         ) and await require_captcha(message.author.id):
-            user_id_from_db, captcha, attempts = await get_captcha_data(
-                message.author.id
-            )
-            print(message.author.id)
-            print(user_id_from_db, captcha, attempts)
-            if user_id_from_db is not None:
-                if attempts < 5:
-                    if message.content.strip().lower() == captcha:
-                        await message.channel.send(
-                            embed=discord.Embed(
-                                title="Success!",
-                                description=f"{message.author.mention}, you are now verified!",
-                            )
-                        )
-                        logs_channel = await self.client.fetch_channel(
-                            int(LOGS_CHANNEL_ID)
-                        )
-                        # TODO: send logs for attempts / success
-                        await get(
-                            logs_channel.guild.members, id=message.author.id
-                        ).add_roles(
-                            get(logs_channel.guild.roles, name=MEMBER_ROLE)
-                        )
-                        await log(
-                            self.client,
-                            "Verified!",
-                            f"{message.author.mention} successfully verified with account age {datetime.utcnow() - message.author.created_at}"
-                        )
-                        execute_sql(f"DELETE FROM captcha_users WHERE user_id={message.author.id};")
-                    else:
-                        await message.channel.send(
-                            embed=discord.Embed(
-                                title="Fail!",
-                                description=":x: Incorrect captcha answer!",
-                            )
-                        )
-                        await increment_attempts(message.author.id)
-                        await log(self.client, "Failed verification", f"{message.author.mention} failed authentication\n`Tries`: {attempts}")
-                else:
-                    await message.channel.send(
-                        embed=discord.Embed(
-                            title="Too many attempts!",
-                            description="Please contact a moderator to be verified.",
-                        )
-                    )
+            return await self.captcha_check(message)
+
+        await increment_column(
+            table="users",
+            column="raw_messages",
+            amount=1,
+            where_column="user_id",
+            where_value=message.author.id,
+        )
+
+        if self.get_cooldown(message) is None:
+            await self.grant_xp(message)
 
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):
