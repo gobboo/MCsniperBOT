@@ -173,6 +173,3 @@ class Messages(commands.Cog):
 
 def setup(client):
     client.add_cog(Messages(client))
-    client.add_cog(Messages(client))
-    client.add_cog(Messages(client))
-    client.add_cog(Messages(client))
