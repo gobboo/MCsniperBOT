@@ -7,11 +7,11 @@ from discord import Forbidden
 from discord.ext import commands
 from discord.utils import get
 
-# from database.postgres_handler import query_sql
+from config import MEMBER_ROLE
 from database.users import set_captcha
 from utils.functions import gen_captcha
 
-from config import MEMBER_ROLE
+# from database.postgres_handler import query_sql
 
 
 class Welcome(commands.Cog):
@@ -44,10 +44,13 @@ class Welcome(commands.Cog):
                 )
                 await set_captcha(member.id, captcha)
             except Forbidden:
+                # TODO: Figure out how we want to approach this as it is 100% necessary
                 print(
                     "Here we will tag them in the one channel they can see, telling them to enable server DMs then "
                     "running !verify"
                 )
+
+            # TODO: Figure if this will ever occur, and get rid of it
             except Exception as e:
                 print(e)
 
