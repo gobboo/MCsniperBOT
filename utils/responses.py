@@ -8,7 +8,7 @@ from config import LOGO
 async def generate_error(ctx, error, example=None):
     error_embed = discord.Embed(
         title="Error!",
-        colour=int("fb607f", 16),
+        colour=int("a12118", 16),
         description=error,
         timestamp=datetime.utcnow(),
     )
@@ -23,7 +23,7 @@ async def generate_error(ctx, error, example=None):
 async def generate_success(ctx, success_message):
     success_embed = discord.Embed(
         title="Success!",
-        colour=0x000000,  # TODO: Change this to green
+        colour=int("2a8c3a", 16),
         description=success_message,
         timestamp=datetime.utcnow(),
     )
