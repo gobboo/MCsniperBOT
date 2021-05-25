@@ -11,7 +11,6 @@ from database.users import captcha_completed
 from database.users import get_captcha_data
 from database.users import get_xp
 from database.users import increment_column
-from database.users import increment_xp
 from database.users import require_captcha
 from utils.functions import create_paste_desc
 from utils.functions import get_level_from_xp
@@ -62,7 +61,7 @@ class Messages(commands.Cog):
                         embed=discord.Embed(
                             title="Fail!",
                             description=":x: Incorrect captcha answer!",
-                            colour=int("fb607f", 16),
+                            colour=int("a12118", 16),
                         )
                     )
                     await increment_column(
@@ -83,7 +82,7 @@ class Messages(commands.Cog):
                     embed=discord.Embed(
                         title="Too many attempts!",
                         description="Please contact a moderator to be verified.",
-                        colour=int("19C7FC", 16),
+                        colour=int("a12118", 16),
                     )
                 )
 
@@ -96,7 +95,6 @@ class Messages(commands.Cog):
         if new_level > current_level:
             level_up = True
 
-        await increment_xp(message.author.id, xp_gained)
         await increment_column(
             table="users",
             column="experience",
