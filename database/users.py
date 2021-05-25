@@ -53,8 +53,12 @@ async def require_captcha(user_id: int) -> bool:
 
 
 async def set_captcha(user_id: int, captcha: str) -> None:
-    execute_sql(
-        f"INSERT INTO captcha_users (user_id, captcha, attempts) VALUES ({user_id}, '{captcha}', 1)"
+    if await get_captcha_data(user_id) is not None:
+        return execute_sql(
+            f"UPDATE captcha_users SET captcha='{captcha}', attempts=0 WHERE user_id={user_id}"
+        )
+    return execute_sql(
+        f"INSERT INTO captcha_users (user_id, captcha, attempts) VALUES ({user_id}, '{captcha}', 0)"
     )
 
 
