@@ -11,8 +11,6 @@ from config import MEMBER_ROLE
 from database.users import set_captcha
 from utils.functions import gen_captcha
 
-# from database.postgres_handler import query_sql
-
 
 class Welcome(commands.Cog):
     def __init__(self, client):
@@ -20,10 +18,16 @@ class Welcome(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        """
+        If the account is > 3 days old, they get access to the server.
+        If not, they're given a captcha
+
+        TODO: Figure out how we want to approach this as it is 100% necessary
+            : Clear up broad exception
+        """
         if dt.utcnow() - member.created_at < datetime.timedelta(days=3):
             await member.add_roles(get(member.guild.roles, name=MEMBER_ROLE))
         else:
-            # The account was brand new (under 3 days old)
             try:
                 captcha, captcha_bytes = gen_captcha()
                 embed = discord.Embed(
@@ -44,13 +48,10 @@ class Welcome(commands.Cog):
                 )
                 await set_captcha(member.id, captcha)
             except Forbidden:
-                # TODO: Figure out how we want to approach this as it is 100% necessary
                 print(
                     "Here we will tag them in the one channel they can see, telling them to enable server DMs then "
                     "running !verify"
                 )
-
-            # TODO: Figure if this will ever occur, and get rid of it
             except Exception as e:
                 print(e)
 
