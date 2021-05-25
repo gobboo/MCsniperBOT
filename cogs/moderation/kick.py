@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import CommandInvokeError
 from discord.ext.commands import MemberNotFound
 
+from database.punishments import store_punishment
 from utils.responses import generate_error
 
 
@@ -12,6 +13,13 @@ class Kick(commands.Cog):
 
     @commands.command(usage=f"!kick @jordan#1284 [reason]")
     async def kick(self, ctx, member: discord.Member = None, reason=None):
+        """
+        TODO: Need to log punishments and store in table
+            : Could make a function in logs.py "log_punishment", which then stores within the same function
+            : Can't really test logging and storing without successfully kicking account so up to Kqzz
+            : await log_punishment(moderator, offender, reason, duration)
+        """
+
         reason = "Unspecified" if reason is None else reason
 
         if member is None:
