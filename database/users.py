@@ -7,11 +7,9 @@ Generic / Reusable Queries
 
 
 async def increment_column(
-    table: str, column: str, amount: int, where_column: str, where_value
+    table: str, column: str, amount: int, condition: str
 ) -> None:
-    execute_sql(
-        f"UPDATE {table} SET {column}={column} + {amount} WHERE {where_column} = {where_value}"
-    )
+    execute_sql(f"UPDATE {table} SET {column}={column} + {amount} {condition}")
 
 
 """

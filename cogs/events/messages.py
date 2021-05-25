@@ -68,8 +68,7 @@ class Messages(commands.Cog):
                         table="captcha_users",
                         column="attempts",
                         amount=1,
-                        where_column="user_id",
-                        where_value=message.author.id,
+                        condition=f"WHERE user_id={message.author.id}",
                     )
                     await log(
                         self.client,
@@ -99,15 +98,13 @@ class Messages(commands.Cog):
             table="users",
             column="experience",
             amount=xp_gained,
-            where_column="user_id",
-            where_value=message.author.id,
+            condition=f"WHERE user_id={message.author.id}",
         )
         await increment_column(
             table="users",
             column="messages",
             amount=1,
-            where_column="user_id",
-            where_value=message.author.id,
+            condition=f"WHERE user_id={message.author.id}",
         )
         if level_up:
             print("Levelled up")
@@ -127,8 +124,7 @@ class Messages(commands.Cog):
             table="users",
             column="raw_messages",
             amount=1,
-            where_column="user_id",
-            where_value=message.author.id,
+            condition=f"WHERE user_id={message.author.id}",
         )
 
         if self.get_cooldown(message) is None:
