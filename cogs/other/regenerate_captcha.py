@@ -18,11 +18,11 @@ class Regenerate(commands.Cog):
         if not await require_captcha(ctx.author.id):
             return await generate_error(
                 ctx.author,
-                f"You are already verified... You do not need to complete a captcha",
+                "You are already verified... You do not need to complete a captcha",
             )
         captcha, captcha_bytes = gen_captcha()
         embed = discord.Embed(
-            description=f"You have regenerated your captcha, see the new one below.",
+            description="You have regenerated your captcha, see the new one below.",
             color=int("19C7FC", 16),
         )
 
