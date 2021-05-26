@@ -8,6 +8,8 @@ discord = "*"
 aiohttp = "*"
 psycopg2 = "*"
 claptcha = "*"
+numpy = "*"
+PIL = "*"
 
 [dev-packages]
 

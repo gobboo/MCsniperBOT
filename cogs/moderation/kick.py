@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord.ext.commands import CommandInvokeError
 from discord.ext.commands import MemberNotFound
 
-from database.punishments import store_punishment
 from utils.responses import generate_error
 
 
