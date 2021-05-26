@@ -49,7 +49,12 @@ def query_sql(command, one=True):
 async def setup_tables():
     commands = (
         """
-            CREATE TYPE punishment_types AS ENUM ('mute', 'warn', 'kick', 'ban')
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'punishment_types') THEN
+                CREATE TYPE punishment_types AS ENUM ('mute', 'warn', 'kick', 'ban');
+            END IF;
+        END$$;
         """,
         """
             CREATE TABLE IF NOT EXISTS punishments (
