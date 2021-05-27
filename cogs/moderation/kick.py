@@ -10,7 +10,7 @@ class Kick(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(usage=f"!kick @jordan#1284 [reason]")
+    @commands.command(usage="!kick @jordan#1284 [reason]")
     async def kick(self, ctx, member: discord.Member = None, reason=None):
         """
         TODO: Need to log punishments and store in table
