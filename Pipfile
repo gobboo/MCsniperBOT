@@ -9,7 +9,7 @@ aiohttp = "*"
 psycopg2 = "*"
 claptcha = "*"
 numpy = "*"
-PIL = "*"
+pillow = "*"
 
 [dev-packages]
 
