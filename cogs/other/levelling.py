@@ -15,7 +15,7 @@ class Levelling(commands.Cog):
         card = await generate_rank_card(ctx.message.author)
         byte_array = io.BytesIO()
         card.save(byte_array, format="png")
-        file = discord.File(io.BytesIO(byte_array.getvalue()), filename="Test.png")
+        file = discord.File(io.BytesIO(byte_array.getvalue()), filename="rank.png")
         await ctx.send(file=file)
 
 

@@ -1,4 +1,5 @@
 import io
+import time
 
 import aiohttp
 import numpy as np
@@ -15,19 +16,26 @@ async def generate_rank_card(user):
     current_level = await get_level_from_xp(xp)
     xp_required = await get_level_xp(current_level + 1)
 
-    background = get_background()
-    async with aiohttp.ClientSession() as session:
-        async with session.get(str(user.avatar_url)) as resp:
-            img = Image.open(io.BytesIO(await resp.read()))
+    background = draw_rounded_rect((819, 256), "#8EAAD3")
 
-    cropped_avatar = crop_avatar_numpy(img)
-    background.paste(cropped_avatar, (100, 28), cropped_avatar)
     print(
         f"Current Level: {current_level}\n"
         f"Current XP: {xp}\n"
         f"XP Required: {xp_required}"
     )
+
+    cropped_avatar = await get_cropped_avatar(user)
+    avatar_with_border = await outline_avatar(cropped_avatar)
+    background.paste(avatar_with_border, (49, 36), avatar_with_border)
     return background
+
+
+async def get_cropped_avatar(user):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(str(user.avatar_url_as(format="webp", size=1024))) as resp:
+            img = Image.open(io.BytesIO(await resp.read()))
+    cropped_avatar = crop_avatar_numpy(img)
+    return cropped_avatar
 
 
 def crop_avatar(avatar):
@@ -46,6 +54,15 @@ def crop_avatar(avatar):
     return avatar_cropped
 
 
+async def outline_avatar(image):
+    to_return = Image.new(mode="RGBA", size=(image.width + 10, image.height + 10), color=(0, 0, 0, 0))
+    draw = ImageDraw.Draw(to_return)
+    thickness = 8
+    draw.ellipse((0, 0, image.width + thickness, image.height + thickness), fill="#373737", outline="#373737")
+    to_return.paste(image, (int(thickness / 2), int(thickness / 2)), mask=image)
+    return to_return
+
+
 def crop_avatar_numpy(img):
     np_image = np.array(img)
     h, w = img.size
@@ -60,37 +77,36 @@ def crop_avatar_numpy(img):
     return avatar_cropped
 
 
-def get_background():
-    template = Image.open("data/rankcard.jpg")
-    radius = 100
-    circle = Image.new("L", (radius * 2, radius * 2), 0)
-    draw = ImageDraw.Draw(circle)
-    draw.ellipse((0, 0, radius * 2, radius * 2), fill=255)
-    alpha = Image.new("L", template.size, 255)
-    w, h = template.size
-    alpha.paste(circle.crop((0, 0, radius, radius)), (0, 0))
-    alpha.paste(circle.crop((0, radius, radius, radius * 2)), (0, h - radius))
-    alpha.paste(circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0))
-    alpha.paste(
-        circle.crop((radius, radius, radius * 2, radius * 2)), (w - radius, h - radius)
-    )
-    template.putalpha(alpha)
-    draw = ImageDraw.Draw(template)
-    draw.ellipse((98, 26, 301, 22), fill="black", outline="black")
+# def get_background():
+#     template = Image.new("RGB", (409 * 2, 256), color="#8EAAD3")
+#     radius = 21
+#     circle = Image.new("L", (radius * 2, radius * 2), 0)
+#     draw = ImageDraw.Draw(circle)
+#     draw.ellipse((0, 0, radius * 2, radius * 2), fill=255)
+#     alpha = Image.new("L", template.size, 255)
+#     w, h = template.size
+#     alpha.paste(circle.crop((0, 0, radius, radius)), (0, 0))
+#     alpha.paste(circle.crop((0, radius, radius, radius * 2)), (0, h - radius))
+#     alpha.paste(circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0))
+#     alpha.paste(
+#         circle.crop((radius, radius, radius * 2, radius * 2)), (w - radius, h - radius)
+#     )
+#     template.putalpha(alpha)
+#     draw = ImageDraw.Draw(template)
+#     draw.ellipse((98, 26, 301, 22), fill="black", outline="black")
 
-    return template
+#     return template
+# UNUSED
 
-
-def draw_rounded_rect():
-    background = Image.new("RGBA", (1024, 256), (0, 0, 0, 0))
+def draw_rounded_rect(dimensions, color):
+    background = Image.new("RGBA", dimensions, (0, 0, 0, 0))
     draw = ImageDraw.Draw(background)
 
     x = 0
     y = 0
-    r = 200
-    w = 1024
+    r = 60
+    w = 819
     h = 256
-    color = "black"
 
     draw.ellipse((x, y, x + r, y + r), fill=color)
     draw.ellipse((x + w - r, y, x + w, y + r), fill=color)
