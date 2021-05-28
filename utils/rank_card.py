@@ -1,10 +1,10 @@
 import io
-import time
 
 import aiohttp
 import numpy as np
 from PIL import Image
 from PIL import ImageDraw
+from PIL import ImageFont
 
 from database.users import get_xp
 from utils.functions import get_level_from_xp
@@ -24,10 +24,26 @@ async def generate_rank_card(user):
         f"XP Required: {xp_required}"
     )
 
+    basefont = await get_font(17 * 2)
+
     cropped_avatar = await get_cropped_avatar(user)
     avatar_with_border = await outline_avatar(cropped_avatar)
-    background.paste(avatar_with_border, (49, 36), avatar_with_border)
+    background.paste(avatar_with_border, (38, 25), avatar_with_border)
+    background = await gen_text(background, (256, 52), f"Level {current_level}", basefont, "#373737")
     return background
+
+
+async def get_font(size: int):
+    font_filename = "Nimbus-Sans-Light.ttf"
+    font_dir = "data"
+    font = ImageFont.truetype(f"./{font_dir}/{font_filename}", size)
+    return font
+
+
+async def gen_text(baseimage, coordinates, text, font, color):
+    draw = ImageDraw.Draw(baseimage)
+    draw.text(coordinates, text, font=font, fill=color)
+    return baseimage
 
 
 async def get_cropped_avatar(user):
@@ -77,27 +93,6 @@ def crop_avatar_numpy(img):
     return avatar_cropped
 
 
-# def get_background():
-#     template = Image.new("RGB", (409 * 2, 256), color="#8EAAD3")
-#     radius = 21
-#     circle = Image.new("L", (radius * 2, radius * 2), 0)
-#     draw = ImageDraw.Draw(circle)
-#     draw.ellipse((0, 0, radius * 2, radius * 2), fill=255)
-#     alpha = Image.new("L", template.size, 255)
-#     w, h = template.size
-#     alpha.paste(circle.crop((0, 0, radius, radius)), (0, 0))
-#     alpha.paste(circle.crop((0, radius, radius, radius * 2)), (0, h - radius))
-#     alpha.paste(circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0))
-#     alpha.paste(
-#         circle.crop((radius, radius, radius * 2, radius * 2)), (w - radius, h - radius)
-#     )
-#     template.putalpha(alpha)
-#     draw = ImageDraw.Draw(template)
-#     draw.ellipse((98, 26, 301, 22), fill="black", outline="black")
-
-#     return template
-# UNUSED
-
 def draw_rounded_rect(dimensions, color):
     background = Image.new("RGBA", dimensions, (0, 0, 0, 0))
     draw = ImageDraw.Draw(background)
@@ -105,7 +100,7 @@ def draw_rounded_rect(dimensions, color):
     x = 0
     y = 0
     r = 60
-    w = 819
+    w = 818
     h = 256
 
     draw.ellipse((x, y, x + r, y + r), fill=color)
