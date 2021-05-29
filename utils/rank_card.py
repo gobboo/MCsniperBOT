@@ -29,7 +29,10 @@ async def generate_rank_card(user):
     cropped_avatar = await get_cropped_avatar(user)
     avatar_with_border = await outline_avatar(cropped_avatar)
     background.paste(avatar_with_border, (38, 25), avatar_with_border)
-    background = await gen_text(background, (256, 52), f"Level {current_level}", basefont, "#373737")
+    background = await gen_text(
+        background, (256, 52), f"Level {current_level}", basefont, "#373737"
+    )
+    background = await gen_text(background, (256, 175), str(user), basefont, "#373737")
     return background
 
 
@@ -48,7 +51,9 @@ async def gen_text(baseimage, coordinates, text, font, color):
 
 async def get_cropped_avatar(user):
     async with aiohttp.ClientSession() as session:
-        async with session.get(str(user.avatar_url_as(format="webp", size=1024))) as resp:
+        async with session.get(
+            str(user.avatar_url_as(format="webp", size=1024))
+        ) as resp:
             img = Image.open(io.BytesIO(await resp.read()))
     cropped_avatar = crop_avatar_numpy(img)
     return cropped_avatar
@@ -71,10 +76,16 @@ def crop_avatar(avatar):
 
 
 async def outline_avatar(image):
-    to_return = Image.new(mode="RGBA", size=(image.width + 10, image.height + 10), color=(0, 0, 0, 0))
+    to_return = Image.new(
+        mode="RGBA", size=(image.width + 10, image.height + 10), color=(0, 0, 0, 0)
+    )
     draw = ImageDraw.Draw(to_return)
     thickness = 8
-    draw.ellipse((0, 0, image.width + thickness, image.height + thickness), fill="#373737", outline="#373737")
+    draw.ellipse(
+        (0, 0, image.width + thickness, image.height + thickness),
+        fill="#373737",
+        outline="#373737",
+    )
     to_return.paste(image, (int(thickness / 2), int(thickness / 2)), mask=image)
     return to_return
 
@@ -102,6 +113,20 @@ def draw_rounded_rect(dimensions, color):
     r = 60
     w = 818
     h = 256
+
+    draw.ellipse((x, y, x + r, y + r), fill="#373737")
+    draw.ellipse((x + w - r, y, x + w, y + r), fill="#373737")
+    draw.ellipse((x, y + h - r, x + r, y + h), fill="#373737")
+    draw.ellipse((x + w - r, y + h - r, x + w, y + h), fill="#373737")
+
+    draw.rectangle((x + r / 2, y, x + w - (r / 2), y + h), fill="#373737")
+    draw.rectangle((x, y + r / 2, x + w, y + h - (r / 2)), fill="#373737")
+
+    x = 5
+    y = 5
+    w = 808
+    h = 246
+    r = 50
 
     draw.ellipse((x, y, x + r, y + r), fill=color)
     draw.ellipse((x + w - r, y, x + w, y + r), fill=color)
