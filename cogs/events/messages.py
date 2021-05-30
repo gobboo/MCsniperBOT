@@ -85,7 +85,7 @@ class Messages(commands.Cog):
                     )
                 )
 
-    async def grant_xp(self, message):
+    async def grant_xp(self, message) -> (bool, int):  # returns if leveled up or not and level
         level_up = False
         xp_gained = randint(15, 25)
         xp = await get_xp(message.author.id)
@@ -107,7 +107,8 @@ class Messages(commands.Cog):
             condition=f"WHERE user_id={message.author.id}",
         )
         if level_up:
-            print("Levelled up")
+            return True, new_level
+        return False, 0
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -128,7 +129,9 @@ class Messages(commands.Cog):
         )
 
         if self.get_cooldown(message) is None:
-            await self.grant_xp(message)
+            leveled_up, level = await self.grant_xp(message)
+            if leveled_up:
+                await message.channel.send(f"{message.author.mention}, you levelled up to level {level}!")
 
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):
