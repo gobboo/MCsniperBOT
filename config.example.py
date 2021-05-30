@@ -1,11 +1,20 @@
-TOKEN = ""
-PREFIX = ""
-LOGO = "https://cdn.discordapp.com/attachments/819654216548483083/844153348470734858/logo.png"
-PASTE_API_KEY = ""  # Uses paste.gg API, register and create API Key
-LOGS_CHANNEL_ID = ""  # Channel for audit logs
-MEMBER_ROLE = "member"
+# General
+TOKEN: str = ""  # discord bot token
+PREFIX: str = "!"
+MEMBER_ROLE: str = "member"
 
-DATABASE = ""
+# Paste
+PASTE_API_KEY: str = ""  # paste.gg | register & create API key
+
+# LOGGING
+LOGS_CHANNEL_ID: int = 000000  # discord ID of logs channel
+
+# Other
+LOGO: str = "https://i.imgur.com/8mKjoAA.png"  # Logo URL
+
+# DB (postgresql)
+
+DATABASE = "MCsniperBOT"  # DB name
+HOST = "localhost:5432"
 USER = ""
 PASSWORD = ""
-HOST = ""
