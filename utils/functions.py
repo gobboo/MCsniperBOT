@@ -19,14 +19,23 @@ async def create_paste_desc(messages):
     return text_to_paste
 
 
-async def get_level_xp(level):
+async def get_level_xp(level) -> int:
+    """
+    Returns te amount of xp needed to go from `level - 1` to `level`
+    """
     return 5 * (level ** 2) + (50 * level) + 100
 
 
 async def get_level_from_xp(xp) -> int:
+    """
+    Gives level from XP value
+
+    Parameters:
+    xp (int): XP to get level from
+    """
     remaining_xp = int(xp)
     level = 0
-    while remaining_xp >= await get_level_xp(level):
+    while (remaining_xp >= await get_level_xp(level)):
         remaining_xp -= await get_level_xp(level)
         level += 1
     return level
