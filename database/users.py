@@ -1,7 +1,7 @@
+from ast import literal_eval as make_tuple
+
 from database.postgres_handler import execute_sql
 from database.postgres_handler import query_sql
-
-from ast import literal_eval as make_tuple
 
 """
 Generic / Reusable Queries
@@ -58,15 +58,13 @@ async def get_user_rank(user_id: int) -> (int, int):
 
     total_count = await get_user_count()
 
-    all_users_experience = sorted(query_sql("SELECT (experience, user_id) FROM users;", one=False), key=lambda u: u[0]).reverse()
-    i = 1
-    print(all_users_experience)
-    for u in all_users_experience:
-        if make_tuple(u[0])[1] == user_id:
-            return i, total_count
-        i += 1
+    leaderboard_query = query_sql(
+        f"SELECT user_id FROM users ORDER BY experience DESC", False
+    )
+    leaderboard = [row[0] for row in leaderboard_query]
+    position = leaderboard.index(user_id) + 1
+    return position, total_count
 
-    raise ThisShouldntHappen
 
 """
 Captcha Queries

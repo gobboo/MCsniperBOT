@@ -6,8 +6,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-from database.users import get_xp
 from database.users import get_user_rank
+from database.users import get_xp
 from utils.functions import get_level_from_xp
 from utils.functions import get_level_xp
 
@@ -19,12 +19,16 @@ async def generate_rank_card(user):
 
     current_level = await get_level_from_xp(xp)
 
-    xp_required = await get_level_xp(current_level + 1)  # XP required to go from current lvl to next lvl
+    xp_required = await get_level_xp(
+        current_level + 1
+    )  # XP required to go from current lvl to next lvl
 
-    xp_required_current = await get_level_xp(current_level)
+    xp_required_current = sum(
+        [await get_level_xp(level) for level in range(current_level)]
+    )
     level_xp = xp - xp_required_current
 
-    progress = (level_xp / await get_level_xp(current_level + 1))
+    progress = level_xp / await get_level_xp(current_level + 1)
 
     print(
         "-----------------------------\n"
@@ -55,7 +59,7 @@ async def generate_rank_card(user):
 async def get_bar(percent):
     bg = await gen_bar_background()
     overlay = await gen_bar_overlay(percent)
-    if percent >= .05:
+    if percent >= 0.05:
         bg.paste(overlay, (5, 5), overlay)
     return bg
 
