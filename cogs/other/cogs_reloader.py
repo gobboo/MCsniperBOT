@@ -15,7 +15,7 @@ class CogsReloader(commands.Cog):
                 print(f"\n[{file}]")
                 await self._reload_cogs(f"{directory}/{file}")
 
-    @commands.command(usage="!reload_cogs")
+    @commands.command(usage="!reload_cogs", aliases=["r", "reload"])
     async def reload_cogs(self, ctx, directory="./cogs"):
         await self._reload_cogs(directory)
         await ctx.send("Successfully reloaded cogs")
