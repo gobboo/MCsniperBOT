@@ -8,7 +8,7 @@ from config import LOGO
 async def generate_error(ctx, error, example=None):
     error_embed = discord.Embed(
         title="Error!",
-        colour=int("a12118", 16),
+        colour=int("cc5151", 16),
         description=error,
         timestamp=datetime.utcnow(),
     )

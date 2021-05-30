@@ -8,11 +8,11 @@ from config import LOGS_CHANNEL_ID
 from config import PASTE_API_KEY
 
 
-async def log(client, title, description):
+async def log(client, title, description, color=None):
     logs_channel = await client.fetch_channel(int(LOGS_CHANNEL_ID))
     emb = discord.Embed(
         title=title,
-        colour=int("19C7FC", 16),
+        colour=color if color is not None else int("19C7FC", 16),
         description=description,
         timestamp=datetime.utcnow(),
     )

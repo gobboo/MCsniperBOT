@@ -41,7 +41,7 @@ class Kick(commands.Cog):
         if isinstance(error, CommandInvokeError):
             return await generate_error(
                 ctx=ctx,
-                error="I'm not allowed to kick that user.. "
+                error="I'm not allowed to kick that user. "
                 "This is likely due to them being above me in the role "
                 "hierarchy!",
                 example=self.kick.usage,

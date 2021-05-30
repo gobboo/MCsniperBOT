@@ -169,6 +169,7 @@ class Messages(commands.Cog):
             client=self.client,
             title="Messages Deleted!",
             description=description,
+            color=int("cc5151", 16)
         )
 
     @commands.Cog.listener()
@@ -183,9 +184,10 @@ class Messages(commands.Cog):
         await log(
             client=self.client,
             title="Message Deleted!",
-            description=f"Message by {message.author} deleted from <#{message.channel.id}>\n\n"
+            description=f"Message by {message.author.mention} ({message.author}) deleted from <#{message.channel.id}>\n\n"
             f"**Content**:\n"
             f"{message_content}",
+            color=int("cc5151", 16),
         )
 
     @commands.Cog.listener()
@@ -193,8 +195,8 @@ class Messages(commands.Cog):
         if before.content != after.content and not before.author.bot:
             await log(
                 client=self.client,
-                title="Message Deleted!",
-                description=f"Message by {before.author} edited in <#{before.channel.id}>\n\n"
+                title="Message Edited!",
+                description=f"Message by {before.author.mention} ({before.author}) edited in <#{before.channel.id}>\n\n"
                 f"**Before**:\n"
                 f"{before.content}\n\n"
                 f"**After**:\n"

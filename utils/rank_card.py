@@ -62,7 +62,7 @@ async def get_bar(percent):
     overlay = await gen_bar_overlay(percent)
     if percent >= 0.05:
         bg.paste(overlay, (5, 5), overlay)
-    if percent >= 0.06:
+    if percent >= 0.15:
         bg = await gen_text(bg, (26, 11), f"{round(percent * 100)}%", await get_font(28), "#C4C4C4")
     return bg
 
