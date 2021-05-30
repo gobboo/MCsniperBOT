@@ -1,6 +1,8 @@
 from database.postgres_handler import execute_sql
 from database.postgres_handler import query_sql
 
+from ast import literal_eval as make_tuple
+
 """
 Generic / Reusable Queries
 """
@@ -30,8 +32,41 @@ async def create_user(user_id: int):
 async def get_xp(user_id: int) -> int:
     if not await user_exists(user_id):
         await create_user(user_id)
-    return query_sql(f"SELECT experience FROM users WHERE user_id={user_id}")[0]
+    return query_sql(f"SELECT experience FROM users WHERE user_id={user_id};")[0]
 
+
+async def get_user_count() -> int:
+    """
+    Get number of users in database
+    """
+    return query_sql("SELECT COUNT (*) FROM USERS")[0]
+
+
+class ThisShouldntHappen(Exception):
+    pass
+
+
+async def get_user_rank(user_id: int) -> (int, int):
+    """
+    Get user rank in db
+
+    e.g. 100 would be they have the 100th highest xp in the db
+    """
+
+    if not await user_exists(user_id):
+        await create_user(user_id)
+
+    total_count = await get_user_count()
+
+    all_users_experience = sorted(query_sql("SELECT (experience, user_id) FROM users;", one=False), key=lambda u: u[0]).reverse()
+    i = 1
+    print(all_users_experience)
+    for u in all_users_experience:
+        if make_tuple(u[0])[1] == user_id:
+            return i, total_count
+        i += 1
+
+    raise ThisShouldntHappen
 
 """
 Captcha Queries

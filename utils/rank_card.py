@@ -7,33 +7,69 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 from database.users import get_xp
+from database.users import get_user_rank
 from utils.functions import get_level_from_xp
 from utils.functions import get_level_xp
 
 
 async def generate_rank_card(user):
     xp = await get_xp(user.id)
-    current_level = await get_level_from_xp(xp)
-    xp_required = await get_level_xp(current_level + 1)
 
-    background = draw_rounded_rect((819, 256), "#8EAAD3")
+    rank, total_count = await get_user_rank(user.id)
+
+    current_level = await get_level_from_xp(xp)
+
+    xp_required = await get_level_xp(current_level + 1)  # XP required to go from current lvl to next lvl
+
+    xp_required_current = await get_level_xp(current_level)
+    level_xp = xp - xp_required_current
+
+    progress = (level_xp / await get_level_xp(current_level + 1))
 
     print(
+        "-----------------------------\n"
         f"Current Level: {current_level}\n"
         f"Current XP: {xp}\n"
-        f"XP Required: {xp_required}"
+        f"XP Required: {xp_required}\n"
+        f"You are currently {progress * 100}% of the way to level {current_level + 1}\n"
+        f"Rank #{rank} of {total_count}\n"
+        "-----------------------------"
     )
 
-    basefont = await get_font(17 * 2)
+    background = draw_rounded_rect((819, 256), 50, "#8EAAD3", outline=10)
+
+    basefont = await get_font(17 * 2)  # Base font for text
 
     cropped_avatar = await get_cropped_avatar(user)
     avatar_with_border = await outline_avatar(cropped_avatar)
-    background.paste(avatar_with_border, (38, 25), avatar_with_border)
+    background.paste(avatar_with_border, (35, 25), avatar_with_border)
     background = await gen_text(
         background, (256, 52), f"Level {current_level}", basefont, "#373737"
     )
     background = await gen_text(background, (256, 175), str(user), basefont, "#373737")
+    bar = await get_bar(progress)
+    background.paste(bar, (256, 110), bar)
     return background
+
+
+async def get_bar(percent):
+    bg = await gen_bar_background()
+    overlay = await gen_bar_overlay(percent)
+    if percent >= .05:
+        bg.paste(overlay, (5, 5), overlay)
+    return bg
+
+
+async def gen_bar_overlay(percent):
+    if percent > 1:
+        raise OverflowError
+    w, h = int(500 * percent), 30
+    return draw_rounded_rect((w, h), 30, "#4D76AA", outline=None)
+
+
+async def gen_bar_background():
+    w, h = 500, 40
+    return draw_rounded_rect((w, h), 38, "#C4C4C4", outline=None)
 
 
 async def get_font(size: int):
@@ -104,29 +140,28 @@ def crop_avatar_numpy(img):
     return avatar_cropped
 
 
-def draw_rounded_rect(dimensions, color):
+def draw_rounded_rect(dimensions, r, color, outline=None):
     background = Image.new("RGBA", dimensions, (0, 0, 0, 0))
     draw = ImageDraw.Draw(background)
-
     x = 0
     y = 0
-    r = 60
-    w = 818
-    h = 256
 
-    draw.ellipse((x, y, x + r, y + r), fill="#373737")
-    draw.ellipse((x + w - r, y, x + w, y + r), fill="#373737")
-    draw.ellipse((x, y + h - r, x + r, y + h), fill="#373737")
-    draw.ellipse((x + w - r, y + h - r, x + w, y + h), fill="#373737")
+    w, h = dimensions
 
-    draw.rectangle((x + r / 2, y, x + w - (r / 2), y + h), fill="#373737")
-    draw.rectangle((x, y + r / 2, x + w, y + h - (r / 2)), fill="#373737")
+    if outline is not None:
+        draw.ellipse((x, y, x + r, y + r), fill="#373737")
+        draw.ellipse((x + w - r, y, x + w, y + r), fill="#373737")
+        draw.ellipse((x, y + h - r, x + r, y + h), fill="#373737")
+        draw.ellipse((x + w - r, y + h - r, x + w, y + h), fill="#373737")
 
-    x = 5
-    y = 5
-    w = 808
-    h = 246
-    r = 50
+        draw.rectangle((x + r / 2, y, x + w - (r / 2), y + h), fill="#373737")
+        draw.rectangle((x, y + r / 2, x + w, y + h - (r / 2)), fill="#373737")
+
+        x = 5
+        y = 5
+        w -= outline
+        h -= outline
+        r -= outline
 
     draw.ellipse((x, y, x + r, y + r), fill=color)
     draw.ellipse((x + w - r, y, x + w, y + r), fill=color)
