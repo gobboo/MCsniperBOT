@@ -35,7 +35,7 @@ async def generate_rank_card(user):
         f"Current Level: {current_level}\n"
         f"Current XP: {xp}\n"
         f"XP Required: {xp_required}\n"
-        f"You are currently {progress * 100}% of the way to level {current_level + 1}\n"
+        f"You are currently {round(progress * 100)}% of the way to level {current_level + 1}\n"
         f"Rank #{rank} of {total_count}\n"
         "-----------------------------"
     )
@@ -51,6 +51,7 @@ async def generate_rank_card(user):
         background, (256, 52), f"Level {current_level}", basefont, "#373737"
     )
     background = await gen_text(background, (256, 175), str(user), basefont, "#373737")
+    background = await gen_text(background, (500, 52), f"Rank #{rank} / {total_count}", basefont, "#373737")
     bar = await get_bar(progress)
     background.paste(bar, (256, 110), bar)
     return background
@@ -61,6 +62,8 @@ async def get_bar(percent):
     overlay = await gen_bar_overlay(percent)
     if percent >= 0.05:
         bg.paste(overlay, (5, 5), overlay)
+    if percent >= 0.06:
+        bg = await gen_text(bg, (26, 11), f"{round(percent * 100)}%", await get_font(28), "#C4C4C4")
     return bg
 
 
