@@ -65,7 +65,7 @@ async def setup_tables():
                 reason TEXT NOT NULL,
                 punished_at TIMESTAMP NOT NULL,
                 duration BIGINT NULL,
-                permanent BOOL DEFAULT FALSE,
+                permanent BOOL DEFAULT TRUE,
                 expired BOOL DEFAULT FALSE
             )
         """,

@@ -4,6 +4,8 @@ from discord.ext.commands import CommandInvokeError
 from discord.ext.commands import MemberNotFound
 
 from utils.responses import generate_error
+from utils.responses import generate_success
+from database.postgres_handler import execute_sql
 
 
 class Kick(commands.Cog):
@@ -29,6 +31,14 @@ class Kick(commands.Cog):
             )
 
         await ctx.guild.kick(user=member, reason=reason)
+        execute_sql(f"""INSERT INTO punishments (
+                user_id,
+                moderator_id,
+                punishment_type,
+                reason,
+                punished_at
+            ) VALUES ({member.id}, {ctx.message.author.id}, 'kick', '{reason}', 'now')""")
+        await generate_success(ctx, f"Successfully kicked {member.mention}")
 
     @kick.error
     async def on_error(self, ctx, error):
