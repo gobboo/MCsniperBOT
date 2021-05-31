@@ -13,17 +13,16 @@
     - Generate auth code (maybe generate it when they are added to the database, and show it to them through a command)
     - List snipes
     - Before this can happen, announce system has to be migrated to new database
-    	- Create a script to migrate 
+	- Create a script to migrate from MongoDB -> PostgreSQL
 - snipe related commands
     - next command (includes namemc searches and / or length of name)
     - snipes
-    	- show past snipes for a user
-    - account info
+        - show past snipes for a user
+    - minecraft account info
 - music commands
 - automod
     - regex for nono words and stuff
     - find a large wordlist of words that should be blacklisted and add those too
 - tags
     - delay
-- change autorole
-    - instead of giving user role on join, if < 3 days old give user a captcha first
+    - load tags from json file, possibly. This allows for easy creation.
