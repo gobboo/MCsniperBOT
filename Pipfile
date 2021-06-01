@@ -10,6 +10,7 @@ psycopg2 = "*"
 claptcha = "*"
 numpy = "*"
 pillow = "*"
+pycountry = "*"
 
 [dev-packages]
 
