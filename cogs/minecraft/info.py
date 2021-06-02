@@ -389,7 +389,10 @@ __Views__: {user_info['namemc']['views']} / month"""
         pretty_socials = await get_pretty_socials(user_info["namemc"]["accounts"])
 
         location = ""
-        if user_info["namemc"]["location"] != "" and user_info["namemc"]["location"] is not None and "Badlion" not in user_info["namemc"]["location"]:
+        namemc_location = user_info['namemc']['location']
+        if isinstance(namemc_location, str):
+            namemc_location = namemc_location.strip().replace('\n\n', '')
+        if namemc_location != "" and namemc_location is not None and "Badlion" not in namemc_location:
             # overengineered code 😐
             country_code = pycountry.countries.get(name=user_info["namemc"]["location"]).alpha_2.lower()
             if country_code in VALID_COUNTRIES_FOR_FLAGS:
@@ -401,9 +404,11 @@ __Views__: {user_info['namemc']['views']} / month"""
                 location = f"__Location__: {user_info['namemc']['location']}\n"
 
         if pretty_socials != "" or location != "":
+            if pretty_socials != "":
+                pretty_socials = "__Accounts__: " + pretty_socials
             embed.add_field(
                 name="Information",
-                value=f"{location}__Accounts__: {pretty_socials}",
+                value=f"{location}{pretty_socials}",
                 inline=False
             )
 
