@@ -63,7 +63,7 @@ async def setup_tables():
                 moderator_id BIGINT NOT NULL,
                 punishment_type punishment_types NOT NULL,
                 reason TEXT NOT NULL,
-                punished_at TIMESTAMP NOT NULL,
+                punished_at BIGINT NOT NULL,
                 duration BIGINT NULL,
                 permanent BOOL DEFAULT TRUE,
                 expired BOOL DEFAULT FALSE
@@ -72,6 +72,7 @@ async def setup_tables():
         """
             CREATE TABLE IF NOT EXISTS users (
                 user_id BIGINT NOT NULL,
+                username TEXT NOT NULL,
                 raw_messages INT NOT NULL DEFAULT 0,
                 messages INT NOT NULL DEFAULT 0,
                 experience INT NOT NULL DEFAULT 0,
