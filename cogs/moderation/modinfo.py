@@ -1,10 +1,13 @@
-from discord.ext import commands
-import discord
+import io
+from datetime import datetime
 
-from database.postgres_handler import query_sql
+import discord
+from discord.ext import commands
+
+from database.punishments import get_history
+from utils.functions import draw_history
 from utils.responses import generate_error
 
-from datetime import datetime
 # import datetime as dt
 
 
@@ -16,29 +19,26 @@ class ModInfo(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.command(
+        aliases=["history", "his", "logs"], usage="!mod info @jordan#1284"
+    )
     async def modinfo(self, ctx, member: discord.Member = None):
+        member = ctx.message.author  # For debugging / easier testing
         if member is None:
             return await generate_error(
-                ctx,
-                "Please select a valid user!",
-                "‏‏‎‎"
+                ctx=ctx,
+                error="Please select a specify a valid user!",
+                example=self.modinfo.usage,
             )
-
-        data = query_sql(
-            f"""SELECT (
-                moderator_id,
-                punishment_type,
-                reason,
-                punished_at,
-                duration,
-                permanent,
-                expired
-            ) FROM punishments WHERE user_id='{member.id}' ORDER BY punished_at ASC"""
-        )
-
-        if data is not None:
-            await ctx.send(data)
+        history = await get_history(member.id)
+        if history:
+            card = await draw_history(str(member), history)
+            byte_array = io.BytesIO()
+            card.save(byte_array, format="png")
+            file = discord.File(
+                io.BytesIO(byte_array.getvalue()), filename=f"history.png"
+            )
+            await ctx.send(file=file)
 
 
 def setup(client):
