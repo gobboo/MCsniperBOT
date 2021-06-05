@@ -25,13 +25,13 @@ async def user_exists(user_id: int) -> bool:
     return True
 
 
-async def create_user(user_id: int):
-    execute_sql(f"INSERT INTO users VALUES({user_id}, 0, 0)")
+async def create_user(user_id: int, username: str):
+    execute_sql(f"INSERT INTO users VALUES({user_id}, '{username}', 0, 0)")
 
 
-async def get_xp(user_id: int) -> int:
+async def get_xp(user_id: int, username: str) -> int:
     if not await user_exists(user_id):
-        await create_user(user_id)
+        await create_user(user_id, username)
     return query_sql(f"SELECT experience FROM users WHERE user_id={user_id};")[0]
 
 

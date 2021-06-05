@@ -13,7 +13,7 @@ from utils.functions import get_level_xp
 
 
 async def generate_rank_card(user):
-    xp = await get_xp(user.id)
+    xp = await get_xp(user.id, user.name)
 
     rank, total_count = await get_user_rank(user.id)
 
@@ -51,7 +51,9 @@ async def generate_rank_card(user):
         background, (256, 52), f"Level {current_level}", basefont, "#373737"
     )
     background = await gen_text(background, (256, 175), str(user), basefont, "#373737")
-    background = await gen_text(background, (500, 52), f"Rank #{rank} / {total_count}", basefont, "#373737")
+    background = await gen_text(
+        background, (500, 52), f"Rank #{rank} / {total_count}", basefont, "#373737"
+    )
     bar = await get_bar(progress)
     background.paste(bar, (256, 110), bar)
     return background
@@ -63,7 +65,9 @@ async def get_bar(percent):
     if percent >= 0.05:
         bg.paste(overlay, (5, 5), overlay)
     if percent >= 0.15:
-        bg = await gen_text(bg, (26, 11), f"{round(percent * 100)}%", await get_font(28), "#C4C4C4")
+        bg = await gen_text(
+            bg, (26, 11), f"{round(percent * 100)}%", await get_font(28), "#C4C4C4"
+        )
     return bg
 
 
