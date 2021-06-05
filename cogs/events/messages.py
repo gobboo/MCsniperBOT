@@ -85,10 +85,12 @@ class Messages(commands.Cog):
                     )
                 )
 
-    async def grant_xp(self, message) -> (bool, int):  # returns if leveled up or not and level
+    async def grant_xp(
+        self, message
+    ) -> (bool, int):  # returns if leveled up or not and level
         level_up = False
         xp_gained = randint(15, 25)
-        xp = await get_xp(message.author.id)
+        xp = await get_xp(message.author.id, message.author.name)
         current_level = await get_level_from_xp(xp)
         new_level = await get_level_from_xp(xp + xp_gained)
         if new_level > current_level:
@@ -131,7 +133,9 @@ class Messages(commands.Cog):
         if self.get_cooldown(message) is None:
             leveled_up, level = await self.grant_xp(message)
             if leveled_up:
-                await message.channel.send(f"{message.author.mention}, you levelled up to level {level}!")
+                await message.channel.send(
+                    f"{message.author.mention}, you levelled up to level {level}!"
+                )
 
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):
@@ -169,7 +173,7 @@ class Messages(commands.Cog):
             client=self.client,
             title="Messages Deleted!",
             description=description,
-            color=int("cc5151", 16)
+            color=int("cc5151", 16),
         )
 
     @commands.Cog.listener()
