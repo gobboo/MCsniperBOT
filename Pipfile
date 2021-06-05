@@ -11,6 +11,9 @@ claptcha = "*"
 numpy = "*"
 pillow = "*"
 pycountry = "*"
+parsedatetime = "*"
+python-dateutil = "*"
+apscheduler = "*"
 
 [dev-packages]
 
