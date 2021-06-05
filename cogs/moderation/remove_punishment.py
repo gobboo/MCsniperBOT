@@ -17,7 +17,8 @@ class Ban(commands.Cog):
 
     async def punishment_remove_check(self):
         to_check = query_sql("""
-                SELECT user_id, punishment_type, punished_at, duration, guild_id, punishment_id FROM punishments WHERE punishment_type='mute' OR punishment_type='ban' AND permanent=false AND expired=false;
+                SELECT user_id, punishment_type, punished_at, duration, guild_id, punishment_id FROM punishments
+                WHERE punishment_type='mute' OR punishment_type='ban' AND permanent=false AND expired=false;
                 """, one=False)
 
         for punishment in to_check:
