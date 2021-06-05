@@ -59,7 +59,7 @@ async def get_user_rank(user_id: int) -> (int, int):
     total_count = await get_user_count()
 
     leaderboard_query = query_sql(
-        f"SELECT user_id FROM users ORDER BY experience DESC", False
+        "SELECT user_id FROM users ORDER BY experience DESC", False
     )
     leaderboard = [row[0] for row in leaderboard_query]
     position = leaderboard.index(user_id) + 1
@@ -90,6 +90,29 @@ async def set_captcha(user_id: int, captcha: str) -> None:
         )
     return execute_sql(
         f"INSERT INTO captcha_users (user_id, captcha, attempts) VALUES ({user_id}, '{captcha}', 0)"
+    )
+
+
+async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, reason, duration, permanent):
+    execute_sql(
+        f"""
+            INSERT INTO punishments (
+                user_id,
+                moderator_id,
+                guild_id,
+                punishment_type,
+                reason,
+                punished_at,
+                {'duration,' if duration is not None else ''}
+                permanent) VALUES (
+                {user_id},
+                {moderator_id},
+                {guild_id},
+                '{punishment_type}',
+                '{reason}',
+                'now',
+                {duration}
+                {'true' if duration is None else 'false'});"""
     )
 
 
