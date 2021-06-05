@@ -61,6 +61,7 @@ async def setup_tables():
                 punishment_id SERIAL PRIMARY KEY,
                 user_id BIGINT NOT NULL,
                 moderator_id BIGINT NOT NULL,
+                guild_id BIGINT NOT NULL,
                 punishment_type punishment_types NOT NULL,
                 reason TEXT NOT NULL,
                 punished_at TIMESTAMP NOT NULL,
