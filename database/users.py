@@ -93,28 +93,5 @@ async def set_captcha(user_id: int, captcha: str) -> None:
     )
 
 
-async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, reason, duration, permanent):
-    execute_sql(
-        f"""
-            INSERT INTO punishments (
-                user_id,
-                moderator_id,
-                guild_id,
-                punishment_type,
-                reason,
-                punished_at,
-                {'duration,' if duration is not None else ''}
-                permanent) VALUES (
-                {user_id},
-                {moderator_id},
-                {guild_id},
-                '{punishment_type}',
-                '{reason}',
-                'now',
-                {duration}
-                {'true' if duration is None else 'false'});"""
-    )
-
-
 async def captcha_completed(user_id: int) -> None:
     execute_sql(f"DELETE FROM captcha_users WHERE user_id={user_id}")

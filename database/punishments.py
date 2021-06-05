@@ -1,4 +1,4 @@
-from database.postgres_handler import query_sql
+from database.postgres_handler import query_sql, execute_sql
 
 
 async def get_history(user_id: int):
@@ -10,3 +10,26 @@ async def get_history(user_id: int):
 
 async def get_moderator(moderator_id: int):
     return query_sql(f"SELECT username FROM users WHERE user_id={moderator_id}")
+
+
+async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, reason, duration, permanent):
+    execute_sql(
+        f"""
+            INSERT INTO punishments (
+                user_id,
+                moderator_id,
+                guild_id,
+                punishment_type,
+                reason,
+                punished_at,
+                {'duration,' if duration is not None else ''}
+                permanent) VALUES (
+                {user_id},
+                {moderator_id},
+                {guild_id},
+                '{punishment_type}',
+                '{reason}',
+                'now',
+                {duration}
+                {'true' if duration is None else 'false'});"""
+    )

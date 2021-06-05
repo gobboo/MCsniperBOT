@@ -3,8 +3,7 @@ import discord
 
 from utils.time import FutureTime
 from utils.responses import generate_error
-from database.users import insert_punishment
-from database.postgres_handler import execute_sql
+from database.punishments import insert_punishment
 from typing import Union
 
 import time
