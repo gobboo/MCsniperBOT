@@ -64,7 +64,7 @@ async def setup_tables():
                 guild_id BIGINT NOT NULL,
                 punishment_type punishment_types NOT NULL,
                 reason TEXT NOT NULL,
-                punished_at BIGINT NOT NULL,
+                punished_at TIMESTAMP NOT NULL,
                 duration BIGINT NULL,
                 permanent BOOL DEFAULT TRUE,
                 expired BOOL DEFAULT FALSE

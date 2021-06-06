@@ -23,27 +23,8 @@ class Ban(commands.Cog):
 
         reason = reason or "Unspecified"
 
-        seconds_til_unban = f"{duration.dt.timestamp() - time.time()}," if duration is not None else ""
-        # execute_sql(
-        #     f"""
-        #     INSERT INTO punishments (
-        #         user_id,
-        #         moderator_id,
-        #         guild_id,
-        #         punishment_type,
-        #         reason,
-        #         punished_at,
-        #         {'duration,' if duration is not None else ''}
-        #         permanent) VALUES (
-        #         {member.id},
-        #         {ctx.author.id},
-        #         {ctx.channel.guild.id},
-        #         'ban',
-        #         '{reason}',
-        #         'now',
-        #         {str(round(seconds_til_unban)) + "," if seconds_til_unban is not False else ','}
-        #         {'true' if duration is None else 'false'});"""
-        # )
+        seconds_til_unban = f"{round(duration.dt.timestamp() - time.time())}," if duration is not None else ""
+
         await insert_punishment(
             user_id=member.id,
             moderator_id=ctx.author.id,

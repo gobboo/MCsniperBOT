@@ -34,7 +34,7 @@ Time: {punished_at}
 Duration: {duration}
 Guild: {guild}""")
 
-            if datetime.utcnow() <= punished_at + timedelta(seconds=duration):
+            if datetime.utcnow() >= punished_at + timedelta(seconds=duration):
                 if punishment_type == "ban":
                     await get(self.client.guilds, id=guild).unban(get(self.client.users, id=user), reason="Ban expired")
                     execute_sql(f"UPDATE punishments SET expired = true WHERE punishment_id = {punishment_id}")
