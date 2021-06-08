@@ -1,11 +1,8 @@
 # Todo
 
 - leveling system
-    - levels measured in minutes
-    - message at every 100 minutes
     - leaderboard
     - migrate levels from Mee6
-    - Before this can happen, we need a database system.
     - customisable level background
 - warns
 - mutes
