@@ -2,11 +2,29 @@ from discord.ext import commands
 import discord
 
 from utils.time import FutureTime
-from utils.responses import generate_error
+from utils.responses import generate_error, generate_success
 from database.punishments import insert_punishment
 from typing import Union
 
 import time
+
+
+# Code from Robo Danny
+class BannedMember(commands.Converter):
+    async def convert(self, ctx, argument):
+        if argument.isdigit():
+            member_id = int(argument, base=10)
+            try:
+                return await ctx.guild.fetch_ban(discord.Object(id=member_id))
+            except discord.NotFound:
+                raise commands.BadArgument('This member has not been banned before.') from None
+
+        ban_list = await ctx.guild.bans()
+        entity = discord.utils.find(lambda u: str(u.user) == argument, ban_list)
+
+        if entity is None:
+            raise commands.BadArgument('This member has not been banned before.')
+        return entity
 
 
 class Ban(commands.Cog):
@@ -53,10 +71,18 @@ class Ban(commands.Cog):
 
         print(error)
 
-    # @commands.command()
-    # @commands.has_permissions(ban_members=True)
-    # @bot.has_permissions(ban_members=True)
-    # async def unban(self, ctx, member)
+    # Code from Robo Danny
+    @commands.command()
+    @commands.guild_only()
+    @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
+    async def unban(self, ctx, member: BannedMember, *, reason: str = None):
+        if reason is None:
+            reason = "Unspecified"
+
+        await ctx.guild.unban(member.user, reason=reason)
+
+        return await generate_success(ctx, f"**Successfully unbanned: **{member.user}\n**ID: **{member.user.id}\n**Ban Reason: **{member.reason}")
 
 
 def setup(client):
