@@ -22,7 +22,7 @@ async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, re
                 punishment_type,
                 reason,
                 punished_at,
-                {'duration,' if duration is not None else ''}
+                {'duration,' if duration != '' else ''}
                 permanent) VALUES (
                 {user_id},
                 {moderator_id},
@@ -31,5 +31,5 @@ async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, re
                 '{reason}',
                 'now',
                 {duration}
-                {'true' if duration is None else 'false'});"""
+                {'true' if duration != '' else 'false'});"""
     )

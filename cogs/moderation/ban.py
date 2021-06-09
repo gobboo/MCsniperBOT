@@ -16,14 +16,20 @@ class Ban(commands.Cog):
     @commands.command()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, duration: Union[FutureTime, None] = None, *, reason: Union[str, None] = None):
+    async def ban(self, ctx, member: discord.Member, duration: Union[FutureTime, None, str] = None, *, reason: Union[str, None] = None):
 
         if member == ctx.author:
             return await generate_error(ctx, "You can't ban yourself, lol.")
 
+        if isinstance(duration, str):
+            reason = duration
+            duration = None
+
         reason = reason or "Unspecified"
 
         seconds_til_unban = f"{round(duration.dt.timestamp() - time.time())}," if duration is not None else ""
+
+        print(duration, reason)
 
         await insert_punishment(
             user_id=member.id,
