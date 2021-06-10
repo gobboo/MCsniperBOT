@@ -33,3 +33,11 @@ async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, re
                 {duration}
                 {'true' if duration != '' else 'false'});"""
     )
+
+
+async def set_expired(user_id, punishment_type):
+    execute_sql(f"""
+    UPDATE punishments
+    SET expired = true
+    WHERE user_id = {user_id} and punishment_type = '{punishment_type}'
+    """)

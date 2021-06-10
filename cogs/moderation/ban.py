@@ -3,7 +3,7 @@ import discord
 
 from utils.time import FutureTime
 from utils.responses import generate_error, generate_success
-from database.punishments import insert_punishment
+from database.punishments import insert_punishment, set_expired
 from typing import Union
 
 import time
@@ -81,6 +81,8 @@ class Ban(commands.Cog):
             reason = "Unspecified"
 
         await ctx.guild.unban(member.user, reason=reason)
+
+        await set_expired(member.user.id, 'ban')
 
         return await generate_success(ctx, f"**Successfully unbanned: **{member.user}\n**ID: **{member.user.id}\n**Ban Reason: **{member.reason}")
 
