@@ -64,6 +64,8 @@ class Ban(commands.Cog):
         except (AttributeError, discord.HTTPException) as e:
             print(e)
 
+        await generate_success(ctx, f"Successfully banned {member.mention} for \"{reason}\"")
+
     @ban.error
     async def handle_error(self, ctx, error):
         if isinstance(error, commands.errors.MissingPermissions):

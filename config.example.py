@@ -2,6 +2,7 @@
 TOKEN: str = ""  # discord bot token
 PREFIX: str = "!"
 MEMBER_ROLE: str = "member"
+MUTE_ROLE: str = "muted"
 
 # Paste
 PASTE_API_KEY: str = ""  # paste.gg | register & create API key

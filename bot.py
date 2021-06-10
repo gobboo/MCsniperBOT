@@ -35,10 +35,10 @@ class MCsniperBOT(commands.AutoShardedBot):
 
     async def cog_loader(self, directory="./cogs"):
         for file in os.listdir(directory):
-            if file.endswith(".py"):
+            if file.endswith(".py") and not file.startswith("_"):
                 self.load_extension(f"{directory[2:].replace('/', '.')}.{file[:-3]}")
                 print(f"=> {file[:-3]} Loaded")
-            elif not (file in ["__pycache__"] or file.endswith(("pyc", "txt"))):
+            elif not (file in ["__pycache__"] or file.endswith(("pyc", "txt"))) and not file.startswith("_"):
                 print(f"[{file}]")
                 await self.cog_loader(f"{directory}/{file}")
 
