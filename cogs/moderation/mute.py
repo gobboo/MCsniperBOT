@@ -58,6 +58,12 @@ class Mute(commands.Cog):
     async def handle_error(error):
         print(error)
 
+    @commands.bot_has_permissions(manage_roles=True)
+    @commands.has_permissions(manage_roles=True)
+    @commands.command()
+    async def unmute(self, ctx, member: discord.Member, duration: Union[FutureTime, None, str] = None, *, reason: Union[str, None] = None):
+        pass
+
 
 def setup(client):
     client.add_cog(Mute(client))

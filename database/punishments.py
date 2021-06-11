@@ -4,7 +4,7 @@ from database.postgres_handler import query_sql, execute_sql
 async def get_history(user_id: int):
     return query_sql(
         f"SELECT * FROM punishments WHERE user_id={user_id} ORDER BY punished_at ASC",
-        False,
+        one=False
     )
 
 

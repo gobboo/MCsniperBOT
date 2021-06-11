@@ -20,10 +20,10 @@ class ModInfo(commands.Cog):
         self.client = client
 
     @commands.command(
-        aliases=["history", "his", "logs"], usage="!mod info @jordan#1284"
+        aliases=["history", "his", "logs"], usage="!modinfo @jordan#1284"
     )
     async def modinfo(self, ctx, member: discord.Member = None):
-        member = ctx.message.author  # For debugging / easier testing
+        # member = ctx.message.author  # For debugging / easier testing
         if member is None:
             return await generate_error(
                 ctx=ctx,
@@ -36,7 +36,7 @@ class ModInfo(commands.Cog):
             byte_array = io.BytesIO()
             card.save(byte_array, format="png")
             file = discord.File(
-                io.BytesIO(byte_array.getvalue()), filename=f"history.png"
+                io.BytesIO(byte_array.getvalue()), filename="history.png"
             )
             await ctx.send(file=file)
 

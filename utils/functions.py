@@ -65,7 +65,7 @@ def gen_captcha():
 
 
 async def draw_history(user, history):
-    font = ImageFont.truetype(f"./data/Nimbus-Sans-Light.ttf", 24)
+    font = ImageFont.truetype("./data/Nimbus-Sans-Light.ttf", 24)
     punishment_count = len(history)
 
     msg = f"{user}'s Punishment History"
@@ -80,14 +80,14 @@ async def draw_history(user, history):
     text = [["Moderator", "Type", "Reason", "Date"]]
     for punishment in history:
         date_formatted = datetime.strftime(
-            datetime.fromtimestamp(punishment[5]), "%d/%m %H:%M"
+            punishment[6], "%d/%m %H:%M"
         )
         moderator = await get_moderator(punishment[2])
         if moderator is None:
             moderator = str(punishment[2])
         else:
             moderator = moderator[0]
-        text.append([moderator, punishment[3], punishment[4], date_formatted])
+        text.append([moderator, punishment[4], punishment[5], date_formatted])
     grid_written = write_grid(grid, text)
 
     grid_written.show()
@@ -113,7 +113,7 @@ def draw_grid(punishment_count, top_grid):
 
 def write_grid(grid, text):
     draw = ImageDraw.Draw(grid)
-    font = ImageFont.truetype(f"./data/Nimbus-Sans-Light.ttf", 24)
+    font = ImageFont.truetype("./data/Nimbus-Sans-Light.ttf", 24)
     box_width, box_height = 251, 44
     first_box_x, first_box_y = 4, 89
     displace_x, displace_y = 0, 0
