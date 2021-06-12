@@ -20,7 +20,7 @@ class ModInfo(commands.Cog):
         self.client = client
 
     @commands.command(
-        aliases=["history", "his", "logs"], usage="!modinfo @jordan#1284"
+        aliases=["history", "hist", "his", "logs"], usage="!modinfo @jordan#1284"
     )
     async def modinfo(self, ctx, member: discord.Member = None):
         # member = ctx.message.author  # For debugging / easier testing
