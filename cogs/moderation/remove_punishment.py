@@ -3,11 +3,12 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from database.postgres_handler import query_sql, execute_sql
 from database.punishments import set_expired
+from config import MUTE_ROLE
 from datetime import timedelta, datetime
 from discord.utils import get
 
 
-class Ban(commands.Cog):
+class RemovePunishment(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.scheduler = AsyncIOScheduler()
@@ -19,7 +20,8 @@ class Ban(commands.Cog):
     async def punishment_remove_check(self):
         to_check = query_sql("""
                 SELECT user_id, punishment_type, punished_at, duration, guild_id, punishment_id FROM punishments
-                WHERE punishment_type='mute' OR punishment_type='ban' AND permanent=false AND expired=false AND duration!=NULL;
+                WHERE punishment_type='mute' AND permanent=false AND expired=false AND duration IS NOT NULL
+                OR punishment_type='ban' AND permanent=false AND expired=false AND duration IS NOT NULL;
                 """, one=False)
 
         for punishment in to_check:
@@ -41,10 +43,13 @@ Guild: {guild}""")
                     execute_sql(f"UPDATE punishments SET expired = true WHERE punishment_id = {punishment_id}")
                     await set_expired(user, 'ban')
                 elif punishment_type == "mute":
-                    print("Unmuting has not been implemented yet")
+                    guild = get(self.client.guilds, id=guild)
+                    muted = get(guild.roles, name=MUTE_ROLE)
+                    await get(guild.members, id=user).remove_rules(muted, resaon="Mute expired")
+                    await set_expired(user, 'mute')
             else:
                 print("HAHAHA NO UNBAN / UNMUTE FOR U")
 
 
 def setup(client):
-    client.add_cog(Ban(client))
+    client.add_cog(RemovePunishment(client))
