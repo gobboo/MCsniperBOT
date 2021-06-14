@@ -7,7 +7,7 @@ import pycountry
 
 from datetime import datetime
 
-VALID_COUNTRIES_FOR_FLAGS = flags = [
+VALID_COUNTRIES_FOR_FLAGS = [
     "af",
     "ax",
     "al",
@@ -338,6 +338,9 @@ async def get_pretty_socials(socials_list: dict) -> str:
             pretty_socials += f"[{social_emojis.get(social)}]({socials_list[social]}) "
         else:
             pretty_socials += f"{social_emojis.get(social)} "
+
+    if "discord" in socials_list.keys():
+        pretty_socials += f"\n__Discord__: {social_emojis.get('discord')} `{socials_list['discord']}`"
 
     return pretty_socials
 
