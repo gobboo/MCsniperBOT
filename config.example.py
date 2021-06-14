@@ -9,6 +9,7 @@ PASTE_API_KEY: str = ""  # paste.gg | register & create API key
 
 # LOGGING
 LOGS_CHANNEL_ID: int = 000000  # discord ID of logs channel
+MOD_LOGS_CHANNEL_ID: int = 000000  # discord ID of mod logs channel
 
 # Other
 LOGO: str = "https://i.imgur.com/8mKjoAA.png"  # Logo URL

@@ -4,11 +4,12 @@ from discord.utils import get
 
 from utils.time import FutureTime
 from utils.responses import generate_error, generate_success
+from utils.logs import log
 from database.punishments import insert_punishment, set_expired
 from typing import Union
 
 import time
-from config import MUTE_ROLE
+from config import MUTE_ROLE, MOD_LOGS_CHANNEL_ID
 
 
 class Mute(commands.Cog):
@@ -28,6 +29,7 @@ class Mute(commands.Cog):
             duration = None
 
         muted = get(ctx.guild.roles, name=MUTE_ROLE)
+        mod_logs = get(ctx.guild.roles, id=MOD_LOGS_CHANNEL_ID)
 
         if muted in member.roles:
             return await generate_error(ctx, f"{member.mention} is already muted!")
@@ -45,7 +47,7 @@ class Mute(commands.Cog):
             punishment_type='mute',
             reason=reason,
             duration=seconds_til_unmute,
-            permanent=duration is None
+            permanent=duration == '',
         )
 
         try:
@@ -54,6 +56,13 @@ class Mute(commands.Cog):
             print(e)
 
         await generate_success(ctx, f"Successfully muted {member.mention} for \"{reason}\"")
+        await log(
+            self.client,
+            title=f"{member.name} was muted",
+            description=f"{member.mention} ({member.id}) was muted\n**Reason: **{reason}\n**Muted Until: **{duration.dt if duration is not None else 'NIL'}",
+            color=int("CF6C6C", 16),
+            custom_log_channel=mod_logs
+        )
 
     @mute.error
     async def handle_error(error):
@@ -64,6 +73,7 @@ class Mute(commands.Cog):
     @commands.command()
     async def unmute(self, ctx, member: discord.Member, *, reason: Union[str, None] = None):
         muted = get(ctx.guild.roles, name=MUTE_ROLE)
+        mod_logs = get(ctx.guild.roles, id=MOD_LOGS_CHANNEL_ID)
         reason = reason or "Unspecified"
 
         if muted not in member.roles:
@@ -77,6 +87,13 @@ class Mute(commands.Cog):
             print(e)
 
         await generate_success(ctx, f"Successfully unmuted {member.mention} for \"{reason}\"")
+        await log(
+            self.client,
+            title=f"{member.name} was unmuted",
+            description=f"{member.mention} ({member.id}) was unmuted\n**Reason: **{reason}",
+            color=int("CF6C6C", 16),
+            custom_log_channel=mod_logs
+        )
 
 
 def setup(client):

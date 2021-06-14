@@ -31,7 +31,7 @@ async def insert_punishment(user_id, moderator_id, guild_id, punishment_type, re
                 '{reason}',
                 'now',
                 {duration}
-                {'true' if duration != '' else 'false'});"""
+                {'true' if duration == '' else 'false'});"""
     )
 
 
