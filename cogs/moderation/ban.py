@@ -6,7 +6,7 @@ from utils.responses import generate_error, generate_success
 from database.punishments import insert_punishment, set_expired
 from typing import Union
 
-import time
+from datetime import datetime
 
 
 # Code from Robo Danny
@@ -45,7 +45,7 @@ class Ban(commands.Cog):
 
         reason = reason or "Unspecified"
 
-        seconds_til_unban = f"{round(duration.dt.timestamp() - time.time())}," if duration is not None else ""
+        seconds_til_unmute = f"{round((duration.dt - datetime.utcnow()).seconds)}," if duration is not None else ""
 
         print(duration, reason)
 

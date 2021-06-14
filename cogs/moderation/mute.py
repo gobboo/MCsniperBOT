@@ -8,8 +8,8 @@ from utils.logs import log
 from database.punishments import insert_punishment, set_expired
 from typing import Union
 
-import time
 from config import MUTE_ROLE, MOD_LOGS_CHANNEL_ID
+from datetime import datetime
 
 
 class Mute(commands.Cog):
@@ -36,9 +36,7 @@ class Mute(commands.Cog):
 
         reason = reason or "Unspecified"
 
-        seconds_til_unmute = f"{round(duration.dt.timestamp() - time.time())}," if duration is not None else ""
-
-        print(duration, reason)
+        seconds_til_unmute = f"{round((duration.dt - datetime.utcnow()).seconds)}," if duration is not None else ""
 
         await insert_punishment(
             user_id=member.id,
