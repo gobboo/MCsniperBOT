@@ -45,6 +45,13 @@ Guild: {guild}""")
                     await get(self.client.guilds, id=guild).unban(get(self.client.users, id=user), reason="Ban expired")
                     execute_sql(f"UPDATE punishments SET expired = true WHERE punishment_id = {punishment_id}")
                     await set_expired(user, 'ban')
+                    await log(
+                        self.client,
+                        title=f"{user} was auto unbanned",
+                        description=f"<@{user}> was unbanned\n**Reason: **Ban expired",
+                        color=int("ECB54D", 16),
+                        custom_log_channel=mod_logs
+                    )
                 elif punishment_type == "mute":
                     guild = get(self.client.guilds, id=guild)
                     muted = get(guild.roles, name=MUTE_ROLE)
@@ -52,9 +59,9 @@ Guild: {guild}""")
                     await set_expired(user, 'mute')
                     await log(
                         self.client,
-                        title=f"<@{user}> (ID: {user}) was auto unmuted",
+                        title=f"{user} was auto unmuted",
                         description=f"<@{user}> was unmuted\n**Reason: **Mute expired",
-                        color=int("CF6C6C", 16),
+                        color=int("ECB54D", 16),
                         custom_log_channel=mod_logs
                     )
 

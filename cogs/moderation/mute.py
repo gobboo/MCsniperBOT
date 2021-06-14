@@ -29,7 +29,7 @@ class Mute(commands.Cog):
             duration = None
 
         muted = get(ctx.guild.roles, name=MUTE_ROLE)
-        mod_logs = get(ctx.guild.roles, id=MOD_LOGS_CHANNEL_ID)
+        mod_logs = get(ctx.guild.channels, id=MOD_LOGS_CHANNEL_ID)
 
         if muted in member.roles:
             return await generate_error(ctx, f"{member.mention} is already muted!")
@@ -73,7 +73,7 @@ class Mute(commands.Cog):
     @commands.command()
     async def unmute(self, ctx, member: discord.Member, *, reason: Union[str, None] = None):
         muted = get(ctx.guild.roles, name=MUTE_ROLE)
-        mod_logs = get(ctx.guild.roles, id=MOD_LOGS_CHANNEL_ID)
+        mod_logs = get(ctx.guild.channels, id=MOD_LOGS_CHANNEL_ID)
         reason = reason or "Unspecified"
 
         if muted not in member.roles:
@@ -91,7 +91,7 @@ class Mute(commands.Cog):
             self.client,
             title=f"{member.name} was unmuted",
             description=f"{member.mention} ({member.id}) was unmuted\n**Reason: **{reason}",
-            color=int("CF6C6C", 16),
+            color=int("ECB54D", 16),
             custom_log_channel=mod_logs
         )
 
