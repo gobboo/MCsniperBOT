@@ -9,7 +9,7 @@ from database.punishments import insert_punishment, set_expired
 from typing import Union
 
 from config import MUTE_ROLE, MOD_LOGS_CHANNEL_ID
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Mute(commands.Cog):
@@ -47,6 +47,24 @@ class Mute(commands.Cog):
             duration=seconds_til_unmute,
             permanent=duration == '',
         )
+
+        try:
+            print("Sending dm")
+            if not member.dm_channel:
+                dm = await member.create_dm()
+            if member.dm_channel:
+                dm = member.dm_channel
+
+            await dm.send(
+                embed=discord.Embed(
+                    title=f"You were muted in {ctx.guild.name}",
+                    description=f"""{member.mention}, you were muted in {ctx.guild.name}
+**Reason: ** {reason}
+**Duration: **{'permanent' if seconds_til_unmute == '' else timedelta(seconds=int(seconds_til_unmute[0]))}"""
+                )
+            )
+        except Exception as e:
+            print(e)
 
         try:
             await member.add_roles(muted, reason=reason)

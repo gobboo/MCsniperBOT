@@ -24,6 +24,20 @@ class Warn(commands.Cog):
 
         if warnings >= 3:
             await generate_success(ctx, f"Warned {user.mention} for {reason}")
+            try:
+                if not user.dm_channel:
+                    dm = await user.create_dm()
+                if user.dm_channel:
+                    dm = user.dm_channel
+
+                await dm.send(
+                    embed=discord.Embed(
+                        title=f"You were warned in {ctx.guild.name}",
+                        description=f"{user.mention}, you were warned in {ctx.guild.name}\n**Reason: ** {reason}"
+                    )
+                )
+            except Exception as e:
+                print(e)
             muted = get(ctx.guild.roles, name=MUTE_ROLE)
             mod_logs = get(ctx.guild.channels, id=MOD_LOGS_CHANNEL_ID)
 
@@ -43,6 +57,27 @@ class Warn(commands.Cog):
                 duration=seconds_til_unmute,
                 permanent=True,
             )
+            try:
+                if not user.dm_channel:
+                    dm = await user.create_dm()
+                if user.dm_channel:
+                    dm = user.dm_channel
+
+                await dm.send(
+                    embed=discord.Embed(
+                        title=f"You were warned in {ctx.guild.name}",
+                        description=f"{user.mention}, you were warned in {ctx.guild.name}\n**Reason: ** {reason}"
+                    )
+                )
+
+                await dm.send(
+                    embed=discord.Embed(
+                        title=f"You were muted in {ctx.guild.name}",
+                        description=f"{user.mention}, you were muted in {ctx.guild.name}\n**Reason: ** {reason}"
+                    )
+                )
+            except Exception as e:
+                print(e)
 
             try:
                 await user.add_roles(muted, reason=reason)
@@ -58,6 +93,20 @@ class Warn(commands.Cog):
             )
             await generate_success(ctx, f"Muted {user.mention} due to them having 3 or more warnings!")
         else:
+            try:
+                if not user.dm_channel:
+                    dm = await user.create_dm()
+                if user.dm_channel:
+                    dm = user.dm_channel
+
+                await dm.send(
+                    embed=discord.Embed(
+                        title=f"You were warned in {ctx.guild.name}",
+                        description=f"{user.mention}, you were warned in {ctx.guild.name}\n**Reason: ** {reason}"
+                    )
+                )
+            except Exception as e:
+                print(e)
             await generate_success(ctx, f"Warned {user.mention} for {reason} ({3 - warnings} warnings left until mute)")
 
 

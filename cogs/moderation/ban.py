@@ -47,8 +47,6 @@ class Ban(commands.Cog):
 
         seconds_til_unban = f"{round((duration.dt - datetime.utcnow()).seconds)}," if duration is not None else ""
 
-        print(duration, reason)
-
         await insert_punishment(
             user_id=member.id,
             moderator_id=ctx.author.id,
@@ -58,6 +56,21 @@ class Ban(commands.Cog):
             duration=seconds_til_unban,
             permanent=duration is None
         )
+
+        try:
+            if not member.dm_channel:
+                dm = await member.create_dm()
+            if member.dm_channel:
+                dm = member.dm_channel
+
+            await dm.send(
+                embed=discord.Embed(
+                    title=f"You were banned from {ctx.guild.name}",
+                    description=f"{member.mention}, you were banned from {ctx.guild.name}\n**Reason: ** {reason}"
+                )
+            )
+        except Exception as e:
+            print(e)
 
         try:
             await ctx.guild.ban(member, reason=reason)
