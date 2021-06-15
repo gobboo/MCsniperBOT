@@ -45,7 +45,7 @@ class Ban(commands.Cog):
 
         reason = reason or "Unspecified"
 
-        seconds_til_unmute = f"{round((duration.dt - datetime.utcnow()).seconds)}," if duration is not None else ""
+        seconds_til_unban = f"{round((duration.dt - datetime.utcnow()).seconds)}," if duration is not None else ""
 
         print(duration, reason)
 
