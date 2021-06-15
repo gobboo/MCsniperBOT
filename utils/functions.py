@@ -78,7 +78,7 @@ async def draw_history(user, history):
     draw.text(((width - text_width) / 2, 10), msg, font=font, fill="black")
 
     text = [["Moderator", "Type", "Reason", "Date"]]
-    for punishment in history:
+    for punishment in reversed(history):
         date_formatted = datetime.strftime(
             punishment[6], "%d/%m %H:%M"
         )

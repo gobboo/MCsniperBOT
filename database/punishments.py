@@ -41,3 +41,31 @@ async def set_expired(user_id, punishment_type):
     SET expired = true
     WHERE user_id = {user_id} and punishment_type = '{punishment_type}'
     """)
+
+
+async def warn_user(user_id, moderator_id, guild_id, reason):
+    execute_sql(f"""
+    INSERT INTO PUNISHMENTS (
+        user_id,
+        moderator_id,
+        guild_id,
+        punishment_type,
+        reason,
+        punished_at
+    ) VALUES (
+        {user_id},
+        {moderator_id},
+        {guild_id},
+        'warn',
+        '{reason}',
+        'now'
+    )
+    """)
+
+
+async def warn_count(user_id):
+    return query_sql(f"""
+    SELECT COUNT(*)
+    FROM punishments
+    WHERE punishment_type='warn' AND user_id={user_id};
+    """, one=True)[0]
