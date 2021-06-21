@@ -57,8 +57,41 @@ class MCsniperBOT(commands.AutoShardedBot):
             return
 
         error = getattr(error, "original", error)
+        
+        log = await self.fetch_channel(config.LOGS_CHANNEL_ID)
 
-        raise error
+        error_embed = discord.Embed(color=0x992D22)
+        error_embed.title = "Command Error"
+        error_embed.add_field(
+            name="Author", value=f"{ctx.author} - {ctx.author.id}", inline=False
+        )
+        error_embed.add_field(
+            name="Command", value=ctx.message.content, inline=False
+        )
+        error_embed.add_field(name="Error", value=error, inline=False)
+        try:
+            error_embed.add_field(
+                name="Traceback",
+                value="".join(
+                    traceback.format_exception(
+                        type(error), error.__cause__, error.__cause__.__traceback__
+                    )
+                )[:1024],
+                inline=False,
+            )
+        except AttributeError:
+            error_embed.add_field(
+                name="Traceback",
+                value="Could not retrieve traceback...",
+                inline=False,
+            )
+        error_embed.timestamp = datetime.utcnow()
+        
+        await log.send(embed=error_embed)
+        
+        logging.critical(
+            f"Command produced error ({ctx.message.content}) :: {error}"
+            )
 
 
 if __name__ == "__main__":
