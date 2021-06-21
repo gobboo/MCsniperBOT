@@ -113,7 +113,8 @@ def draw_grid(punishment_count, top_grid):
 
 def write_grid(grid, text):
     draw = ImageDraw.Draw(grid)
-    font = ImageFont.truetype("./data/Nimbus-Sans-Light.ttf", 24)
+    font_size = 24
+    font = ImageFont.truetype("./data/Nimbus-Sans-Light.ttf", font_size)
     box_width, box_height = 251, 44
     first_box_x, first_box_y = 4, 89
     displace_x, displace_y = 0, 0
@@ -121,6 +122,10 @@ def write_grid(grid, text):
     for row in text:
         for column in row:
             text_width, text_height = font.getsize(column)
+            while text_width > 255:
+                font_size -= 1
+                font = ImageFont.truetype("./data/Nimbus-Sans-Light.ttf", font_size)
+                text_width, text_height = font.getsize(column)
             draw.text(
                 (
                     (first_box_x + box_width - text_width) / 2 + displace_x,
@@ -131,6 +136,8 @@ def write_grid(grid, text):
                 fill="black",
             )
             displace_x += 255
+            font_size = 24
+            font = ImageFont.truetype("./data/Nimbus-Sans-Light.ttf", font_size)
         displace_x = 0
         displace_y += 49
     return grid
