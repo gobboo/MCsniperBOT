@@ -81,7 +81,7 @@ class Mute(commands.Cog):
         )
 
     @mute.error
-    async def handle_error(error):
+    async def handle_error(self, ctx, error):
         print(error)
 
     @commands.bot_has_permissions(manage_roles=True)

@@ -57,7 +57,7 @@ class MCsniperBOT(commands.AutoShardedBot):
             return
 
         error = getattr(error, "original", error)
-        
+
         log = await self.fetch_channel(config.LOGS_CHANNEL_ID)
 
         error_embed = discord.Embed(color=0x992D22)
@@ -70,6 +70,7 @@ class MCsniperBOT(commands.AutoShardedBot):
         )
         error_embed.add_field(name="Error", value=error, inline=False)
         try:
+            traceback = error.__traceback__
             error_embed.add_field(
                 name="Traceback",
                 value="".join(
@@ -86,12 +87,12 @@ class MCsniperBOT(commands.AutoShardedBot):
                 inline=False,
             )
         error_embed.timestamp = datetime.utcnow()
-        
+
         await log.send(embed=error_embed)
-        
+
         logging.critical(
             f"Command produced error ({ctx.message.content}) :: {error}"
-            )
+        )
 
 
 if __name__ == "__main__":
