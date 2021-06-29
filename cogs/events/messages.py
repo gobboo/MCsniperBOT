@@ -7,6 +7,7 @@ from discord.utils import get
 
 from config import LOGS_CHANNEL_ID
 from config import MEMBER_ROLE
+from config import VERIFY_HERE_ID
 from database.users import captcha_completed
 from database.users import get_captcha_data
 from database.users import get_xp
@@ -32,6 +33,8 @@ class Messages(commands.Cog):
         return bucket.update_rate_limit()
 
     async def captcha_check(self, message):
+        if message.content.lower().replace("!", "") in ("retry", "refresh", "regenerate"):
+            return
         user_id_from_db, captcha, attempts = await get_captcha_data(message.author.id)
         logs_channel = await self.client.fetch_channel(int(LOGS_CHANNEL_ID))
         member = logs_channel.guild.get_member(message.author.id)
@@ -60,7 +63,7 @@ class Messages(commands.Cog):
                     await message.channel.send(
                         embed=discord.Embed(
                             title="Fail!",
-                            description=":x: Incorrect captcha answer!",
+                            description=":x: Incorrect captcha answer!\n\nYou can run !regenerate to get a new captcha or try this one again.",
                             colour=int("a12118", 16),
                         )
                     )
@@ -80,7 +83,7 @@ class Messages(commands.Cog):
                 await message.channel.send(
                     embed=discord.Embed(
                         title="Too many attempts!",
-                        description="Please contact a moderator to be verified.",
+                        description="Too many attempts! Please contact a moderator to be verified.",
                         colour=int("a12118", 16),
                     )
                 )
@@ -118,8 +121,9 @@ class Messages(commands.Cog):
         if message.author == self.client.user:
             return
 
-        if isinstance(
-            message.channel, discord.channel.DMChannel
+        if (
+            isinstance(message.channel, discord.channel.DMChannel)
+            or message.channel.id == VERIFY_HERE_ID
         ) and await require_captcha(message.author.id):
             return await self.captcha_check(message)
 

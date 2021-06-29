@@ -13,6 +13,7 @@ MOD_LOGS_CHANNEL_ID: int = 000000  # discord ID of mod logs channel
 
 # Other
 LOGO: str = "https://i.imgur.com/8mKjoAA.png"  # Logo URL
+MOD_LOGS_CHANNEL_ID: int = 000000  # discord ID of verify-here
 
 # DB (postgresql)
 

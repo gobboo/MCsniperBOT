@@ -25,35 +25,35 @@ class Welcome(commands.Cog):
         TODO: Figure out how we want to approach this as it is 100% necessary
             : Clear up broad exception
         """
-        if dt.utcnow() - member.created_at > datetime.timedelta(days=3):
-            await member.add_roles(get(member.guild.roles, name=MEMBER_ROLE))
-        else:
-            try:
-                captcha, captcha_bytes = gen_captcha()
-                embed = discord.Embed(
-                    description=f"Hello {member.mention}, your Discord account is less than 3 days old. "
-                    f"Due to this, we require you to solve the below captcha in order to gain access to "
-                    f"the rest of the server.\n\n"
-                    f"Please respond with the exact text shown in the captcha below.",
-                    color=int("d8737f", 16),
-                )
+        # if dt.utcnow() - member.created_at > datetime.timedelta(days=3):
+        #     await member.add_roles(get(member.guild.roles, name=MEMBER_ROLE))
+        # else:
+        try:
+            captcha, captcha_bytes = gen_captcha()
+            embed = discord.Embed(
+                description=f"Hello {member.mention}, we require all users to submit a captcha in order to prove they are not a bot!"
+                f"Due to this, we require you to solve the below captcha in order to gain access to "
+                f"the rest of the server.\n\n"
+                f"Please respond with the exact text shown in the captcha below.",
+                color=int("d8737f", 16),
+            )
 
-                embed.set_image(url="attachment://captcha.png")
-                await member.send(
-                    content=member.mention,
-                    embed=embed,
-                    file=discord.File(
-                        io.BytesIO(captcha_bytes.getvalue()), filename="captcha.png"
-                    ),
-                )
-                await set_captcha(member.id, captcha)
-            except Forbidden:
-                print(
-                    "Here we will tag them in the one channel they can see, telling them to enable server DMs then "
-                    "running !verify"
-                )
-            except Exception as e:
-                print(e)
+            embed.set_image(url="attachment://captcha.png")
+            await member.send(
+                content=member.mention,
+                embed=embed,
+                file=discord.File(
+                    io.BytesIO(captcha_bytes.getvalue()), filename="captcha.png"
+                ),
+            )
+            await set_captcha(member.id, captcha)
+        except Forbidden:
+            print(
+                "Here we will tag them in the one channel they can see, telling them to enable server DMs then "
+                "running !verify"
+            )
+        except Exception as e:
+            print(e)
 
 
 def setup(client):
