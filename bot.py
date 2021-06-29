@@ -1,6 +1,7 @@
 import logging.handlers
 import os
 import sys
+import traceback
 from datetime import datetime
 
 import discord
