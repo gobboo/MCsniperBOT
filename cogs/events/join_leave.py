@@ -7,8 +7,9 @@ from discord import Forbidden
 from discord.ext import commands
 from discord.utils import get
 
-from config import MEMBER_ROLE
+from config import MUTE_ROLE
 from database.users import set_captcha
+from database.punishments import insert_punishment
 from utils.functions import gen_captcha
 
 
@@ -25,15 +26,28 @@ class Welcome(commands.Cog):
         TODO: Figure out how we want to approach this as it is 100% necessary
             : Clear up broad exception
         """
-        # if dt.utcnow() - member.created_at > datetime.timedelta(days=3):
-        #     await member.add_roles(get(member.guild.roles, name=MEMBER_ROLE))
-        # else:
+        if dt.utcnow() - member.created_at > datetime.timedelta(days=3):
+
+            await insert_punishment(
+                user_id=member.id,
+                moderator_id=self.client.user.id,
+                guild_id=member.guild.id,
+                punishment_type='mute',
+                reason="New account!",
+                duration="",
+                permanent=True,
+            )
+            await member.add_roles(get(member.guild.roles, name=MUTE_ROLE))
+            embed = discord.Embed(
+                title="Brand new account detected!",
+                description=f"Hello {member.mention}, we detected that your account was"
+                " created very recently! Since brand new accounts are often used for spamming, trolling, etc..."
+                " you have been muted. **Please direct message a moderator and explain the situation to be unmuted!**"
+            )
         try:
             captcha, captcha_bytes = gen_captcha()
             embed = discord.Embed(
-                description=f"Hello {member.mention}, we require all users to submit a captcha in order to prove they are not a bot!"
-                f"Due to this, we require you to solve the below captcha in order to gain access to "
-                f"the rest of the server.\n\n"
+                description=f"Hello {member.mention}, we require all users to submit a captcha in order to prove they are not a bot!\n"
                 f"Please respond with the exact text shown in the captcha below.",
                 color=int("d8737f", 16),
             )

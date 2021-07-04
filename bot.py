@@ -71,17 +71,17 @@ class MCsniperBOT(commands.AutoShardedBot):
         )
         error_embed.add_field(name="Error", value=error, inline=False)
         try:
-            traceback = error.__traceback__
             error_embed.add_field(
                 name="Traceback",
                 value="".join(
                     traceback.format_exception(
-                        type(error), error.__cause__, error.__cause__.__traceback__
+                        type(error), error.__cause__, error.__traceback__
                     )
                 )[:1024],
                 inline=False,
             )
-        except AttributeError:
+        except AttributeError as e:
+            print(e)
             error_embed.add_field(
                 name="Traceback",
                 value="Could not retrieve traceback...",
