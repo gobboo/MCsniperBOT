@@ -21,6 +21,7 @@ DATABASE = "MCsniperBOT"  # DB name
 HOST = "localhost:5432"
 USER = ""
 PASSWORD = ""
+SSL
 
 
 RULES = {
