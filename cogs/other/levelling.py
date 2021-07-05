@@ -24,7 +24,8 @@ class Levelling(commands.Cog):
 
     @commands.command(aliases=["lb", "leaderboard", "levels", "lvls"])
     async def _lb(self, ctx, size: int = 5):
-        lb = await get_lb()[0:size]
+        lb = await get_lb()
+        lb = lb[0:size]
 
         user_strs = []
         rank = 0
