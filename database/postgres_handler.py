@@ -6,12 +6,14 @@ from config import DATABASE
 from config import HOST
 from config import PASSWORD
 from config import USER
+from config import PORT
+from config import SSLMODE
 
 
 def create_connection():
     try:
         conn = psycopg2.connect(
-            f"dbname={DATABASE} user={USER} password={PASSWORD} host={HOST}"
+            f"dbname={DATABASE} user={USER} password={PASSWORD} host={HOST} port={PORT} sslmode={SSLMODE}"
         )
     except (Exception, psycopg2.DatabaseError) as error:
         return logging.critical(f"Postgres has produced an error (startup) ~ {error}")

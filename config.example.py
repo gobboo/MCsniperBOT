@@ -18,10 +18,11 @@ MOD_LOGS_CHANNEL_ID: int = 000000  # discord ID of verify-here
 # DB (postgresql)
 
 DATABASE = "MCsniperBOT"  # DB name
-HOST = "localhost:5432"
+HOST = "localhost"
+PORT = "5432"
 USER = ""
 PASSWORD = ""
-SSL
+SSLMODE = "allow"
 
 
 RULES = {

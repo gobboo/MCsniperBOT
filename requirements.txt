@@ -1,2 +1,9 @@
 discord
 aiohttp
+psycopg2-binary
+claptcha
+parsedatetime
+python-dateutil
+apscheduler
+numpy
+pycountry

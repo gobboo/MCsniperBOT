@@ -26,7 +26,7 @@ class Welcome(commands.Cog):
         TODO: Figure out how we want to approach this as it is 100% necessary
             : Clear up broad exception
         """
-        if dt.utcnow() - member.created_at > datetime.timedelta(days=3):
+        if dt.utcnow() - member.created_at < datetime.timedelta(days=3):
 
             await insert_punishment(
                 user_id=member.id,

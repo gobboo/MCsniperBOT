@@ -12,7 +12,7 @@ class Levelling(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    # @commands.command()
+    @commands.command(aliases=["level", "lvl"])
     async def rank(self, ctx, user: discord.Member = None):
         # Need to add a rank_error func in case invalid user
         user = ctx.message.author if user is None else user
@@ -22,7 +22,7 @@ class Levelling(commands.Cog):
         file = discord.File(io.BytesIO(byte_array.getvalue()), filename="rank.png")
         await ctx.send(file=file)
 
-    @commands.command(aliases=["lb", "leaderboard"])
+    @commands.command(aliases=["lb", "leaderboard", "levels", "lvls"])
     async def _lb(self, ctx):
         lb = await get_lb()
         print(lb)
