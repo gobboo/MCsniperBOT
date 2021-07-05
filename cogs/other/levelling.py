@@ -23,9 +23,8 @@ class Levelling(commands.Cog):
         await ctx.send(file=file)
 
     @commands.command(aliases=["lb", "leaderboard", "levels", "lvls"])
-    async def _lb(self, ctx):
-        lb = await get_lb()
-        print(lb)
+    async def _lb(self, ctx, size: int = 5):
+        lb = await get_lb()[0:size]
 
         user_strs = []
         rank = 0
