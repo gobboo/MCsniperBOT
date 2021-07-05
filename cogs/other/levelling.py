@@ -26,6 +26,8 @@ class Levelling(commands.Cog):
     async def _lb(self, ctx, size: int = 5):
         if size > 20:
             return
+        if size < 1:
+            return
         lb = await get_lb()
         lb = lb[0:size]
 
