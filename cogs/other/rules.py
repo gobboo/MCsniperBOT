@@ -21,17 +21,18 @@ class Rules(commands.Cog):
 
         else:
             rules = rules.split(" ")
+            rules_not_found = ""
             for rule in rules:
                 if rule == "":
                     continue
                 rule = rule.strip().replace(".", "")
                 description = RULES.get(rule.lower(), f"Rule not found! Please refer to #welcome for rule \"{rule}\"")
-
-                embeds.append(discord.Embed(
-                    title=f"Rule {rule.upper()}",
-                    description=description,
-                    color=0x7CACD4
-                ))
+                if "Rule not found!" not in description:
+                    embeds.append(discord.Embed(
+                        title=f"Rule {rule.upper()}",
+                        description=description,
+                        color=0x7CACD4
+                    ))
 
         for embed in embeds:
             await ctx.channel.send(embed=embed)
