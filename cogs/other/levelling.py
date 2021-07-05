@@ -12,7 +12,7 @@ class Levelling(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    #@commands.command()
     async def rank(self, ctx, user: discord.Member = None):
         # Need to add a rank_error func in case invalid user
         user = ctx.message.author if user is None else user
