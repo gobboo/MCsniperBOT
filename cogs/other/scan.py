@@ -11,7 +11,7 @@ class Scan(commands.Cog):
 
     @commands.command()
     @commands.bot_has_permissions(manage_roles=True)
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_permissions(administrator=True)
     async def scan(self, ctx):
         member = get(ctx.guild.roles, name=MEMBER_ROLE)
         for user in ctx.guild.members:

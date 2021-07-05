@@ -66,6 +66,12 @@ async def get_user_rank(user_id: int) -> (int, int):
     return position, total_count
 
 
+async def get_lb():
+    lb_query = query_sql(
+        "SELECT user_id, experience FROM users ORDER BY experience DESC", False
+    )
+    return lb_query
+
 """
 Captcha Queries
 """
