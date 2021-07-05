@@ -18,6 +18,7 @@ from utils.functions import get_level_from_xp
 from utils.logs import log
 from utils.logs import paste
 from utils.responses import generate_success
+from utils.automod import automod
 
 
 class Messages(commands.Cog):
@@ -127,19 +128,20 @@ class Messages(commands.Cog):
         ) and await require_captcha(message.author.id):
             return await self.captcha_check(message)
 
-        await increment_column(
-            table="users",
-            column="raw_messages",
-            amount=1,
-            condition=f"WHERE user_id={message.author.id}",
-        )
-
-        if self.get_cooldown(message) is None:
-            leveled_up, level = await self.grant_xp(message)
-            if leveled_up:
-                await message.channel.send(
-                    f"{message.author.mention}, you levelled up to level {level}!"
-                )
+        if not isinstance(message.channel, discord.channel.DMChannel):
+            await automod(message)
+            await increment_column(
+                table="users",
+                column="raw_messages",
+                amount=1,
+                condition=f"WHERE user_id={message.author.id}",
+            )
+            if self.get_cooldown(message) is None:
+                leveled_up, level = await self.grant_xp(message)
+                if leveled_up:
+                    await message.channel.send(
+                        f"{message.author.mention}, you levelled up to level {level}!"
+                    )
 
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):
