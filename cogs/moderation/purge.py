@@ -17,6 +17,8 @@ class Purge(commands.Cog):
     @commands.command(
         aliases=["delete", "clear"], usage="!purge 5 | !purge @jordan#1284 5"
     )
+    @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_messages=True)
     async def purge(
         self, ctx, user_or_amount: typing.Union[discord.Member, int] = None, amount=None
     ):
