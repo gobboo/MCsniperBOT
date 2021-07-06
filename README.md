@@ -31,9 +31,6 @@ For generating a nice looking rank card for a user.
 
 ![preview](https://i.imgur.com/Sg72fau.png)
 
-#### responses.py
-
-used for generating nice looking embeds
 
 ### Database
 
