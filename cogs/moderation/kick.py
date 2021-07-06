@@ -13,6 +13,8 @@ class Kick(commands.Cog):
         self.client = client
 
     @commands.command(usage="!kick @jordan#1284 [reason]")
+    @commands.has_permissions(kick_members=True)
+    @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member = None, reason=None):
         reason = "Unspecified" if reason is None else reason
 
